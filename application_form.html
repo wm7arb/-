@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اختيار نوع التقديم</title>
+    <title>أسئلة تقديم عسكرية</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,6 +24,16 @@
             margin-bottom: 20px;
             font-size: 36px;
         }
+        .question {
+            margin: 10px 0;
+        }
+        input[type="text"], input[type="number"], select {
+            padding: 10px;
+            width: 250px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
         button {
             padding: 15px 40px;
             border: none;
@@ -31,19 +41,90 @@
             cursor: pointer;
             font-size: 18px;
             background-color: #34C759;
-            margin: 10px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>اختار نوع التقديم</h1>
-        <!-- زر تقديم عسكرية -->
-        <button onclick="location.href='military_application.html'">تقديم عسكرية</button>
-        <!-- زر تقديم عصابات -->
-        <button onclick="location.href='gang_application.html'">تقديم عصابات</button>
-        <!-- زر تقديم إعلام -->
-        <button onclick="location.href='media_application.html'">تقديم إعلام</button>
+        <h1>أسئلة تقديم عسكرية</h1>
+        
+        <div class="question">
+            <p>سؤال 1: ما هو اسم المستخدم؟</p>
+            <input type="text" id="username" placeholder="أدخل اسم المستخدم هنا">
+        </div>
+
+        <div class="question">
+            <p>سؤال 2: الاسم الثلاثي:</p>
+            <input type="text" id="fullname" placeholder="أدخل الاسم الثلاثي">
+        </div>
+
+        <div class="question">
+            <p>سؤال 3: العمر:</p>
+            <input type="number" id="age" placeholder="أدخل العمر">
+        </div>
+
+        <div class="question">
+            <p>سؤال 4: سبب التقديم:</p>
+            <input type="text" id="reason" placeholder="أدخل سبب التقديم">
+        </div>
+
+        <div class="question">
+            <p>سؤال 5: العصابات المقدمة عليها:</p>
+            <select id="gang-sector">
+                <option value="ABLOD">ABLOD</option>
+                <option value="ALKRBS">ALKRBS</option>
+            </select>
+        </div>
+
+        <button onclick="submitAnswers()">إرسال الإجابات</button>
     </div>
+
+    <script>
+        function submitAnswers() {
+            const username = document.getElementById('username').value.trim();
+            const fullname = document.getElementById('fullname').value.trim();
+            const age = document.getElementById('age').value.trim();
+            const reason = document.getElementById('reason').value.trim();
+            const sector = document.getElementById('gang-sector').value;
+
+            if (username === "" || fullname === "" || age === "" || reason === "") {
+                alert("يرجى الإجابة على جميع الأسئلة.");
+                return;
+            }
+
+            let webhookURL = "";
+
+            // تحديد رابط الويبهوك بناءً على نوع التقديم
+            if (sector === "ABLOD" || sector === "ALKRBS") {
+                webhookURL = "https://discord.com/api/webhooks/1397061583837855785/7HlY2AdV1zbh903KGfE-9_FvmKQfxRnyEI6ChPqV8mngIGDwmf7HjWPYds8QhFaA70ns"; // عصابات
+            } else if (sector === "LSPD" || sector === "SSF") {
+                webhookURL = "https://discord.com/api/webhooks/1397058509094518805/8HwlqkO3geEHmd49JfKNi0DsMByETYv1tI-bYM5d_STOlsu7gSIHqG27XJ42KRufgdLv"; // إعلامي
+            } else {
+                webhookURL = "https://discord.com/api/webhooks/1397061473498435614/WXiSUkHsRcfPs3mvytyzXWRWN4IlUgQK8AFsCC5H2sbEESCAuF1Hsv0urpz0c50aEG0F"; // عسكرية
+            }
+
+            const data = {
+                content: `إجابات الأسئلة:\nاسم المستخدم: ${username}\nالأسم الثلاثي: ${fullname}\nالعمر: ${age}\nسبب التقديم: ${reason}\nالعصابات المقدمة عليها: ${sector}`,
+            };
+
+            fetch(webhookURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(() => {
+                // بعد إرسال البيانات، يتم نقل المستخدم إلى غرفة ديسكورد
+                window.location.href = 'https://discord.com/invite/your-room-link'; // ضع هنا رابط الغرفة
+            })
+            .catch(error => {
+                console.error('حدث خطأ أثناء إرسال البيانات:', error);
+                alert("حدث خطأ أثناء إرسال الإجابات.");
+            });
+        }
+    </script>
 </body>
 </html>
