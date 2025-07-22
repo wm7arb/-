@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أسئلة تقديم عسكرية</title>
+    <title>أسئلة تقديم إعلام</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -47,69 +47,61 @@
 </head>
 <body>
     <div class="container">
-        <h1>سؤال 1: ما هو اسم المستخدم؟</h1>
-        <input type="text" id="military-username" placeholder="أدخل اسم المستخدم هنا">
-        <button onclick="startMilitaryApplication()">ابدأ تقديم عسكرية</button>
+        <h1>أسئلة تقديم إعلام</h1>
         
-        <div id="questions" style="display:none;">
-            <h2>أسئلة تقديم عسكرية</h2>
-            <div class="question">
-                <p>سؤال 2: الأسم الثلاثي:</p>
-                <input type="text" id="military-fullname" placeholder="أدخل الأسم الثلاثي">
-            </div>
-            <div class="question">
-                <p>سؤال 3: العمر:</p>
-                <input type="number" id="military-age" placeholder="أدخل العمر">
-            </div>
-            <div class="question">
-                <p>سؤال 4: سبب التقديم:</p>
-                <input type="text" id="military-reason" placeholder="أدخل سبب التقديم">
-            </div>
-            <div class="question">
-                <p>سؤال 5: القطاع المقدم عليه:</p>
-                <select id="military-sector">
-                    <option value="SSF">SSF</option>
-                    <option value="LSPD">LSPD</option>
-                </select>
-            </div>
-            <button onclick="submitAnswers('عسكرية')">إرسال الإجابات</button>
+        <div class="question">
+            <p>سؤال 1: ما هو اسم المستخدم؟</p>
+            <input type="text" id="username" placeholder="أدخل اسم المستخدم هنا">
         </div>
+
+        <div class="question">
+            <p>سؤال 2: الاسم الثلاثي:</p>
+            <input type="text" id="fullname" placeholder="أدخل الاسم الثلاثي">
+        </div>
+
+        <div class="question">
+            <p>سؤال 3: العمر:</p>
+            <input type="number" id="age" placeholder="أدخل العمر">
+        </div>
+
+        <div class="question">
+            <p>سؤال 4: سبب التقديم:</p>
+            <input type="text" id="reason" placeholder="أدخل سبب التقديم">
+        </div>
+
+        <div class="question">
+            <p>سؤال 5: العصابات المقدمة عليها:</p>
+            <select id="gang-sector">
+                <option value="ABLOD">ABLOD</option>
+                <option value="ALKRBS">ALKRBS</option>
+            </select>
+        </div>
+
+        <button onclick="submitAnswers()">إرسال الإجابات</button>
     </div>
 
     <script>
-        function startMilitaryApplication() {
-            const username = document.getElementById('military-username').value.trim();
-            
-            if (username === "") {
-                alert("يرجى إدخال اسم المستخدم.");
-                return;
-            }
+        function submitAnswers() {
+            const username = document.getElementById('username').value.trim();
+            const fullname = document.getElementById('fullname').value.trim();
+            const age = document.getElementById('age').value.trim();
+            const reason = document.getElementById('reason').value.trim();
+            const sector = document.getElementById('gang-sector').value;
 
-            // حفظ اسم المستخدم في التخزين المحلي (LocalStorage) لاستخدامه لاحقًا
-            localStorage.setItem("username", username);
-
-            // إظهار الأسئلة بعد إدخال اسم المستخدم
-            document.getElementById('questions').style.display = 'block';
-        }
-
-        function submitAnswers(type) {
-            const username = localStorage.getItem("username");
-            const fullname = document.getElementById('military-fullname').value.trim();
-            const age = document.getElementById('military-age').value.trim();
-            const reason = document.getElementById('military-reason').value.trim();
-            const sector = document.getElementById('military-sector').value;
-
-            if (fullname === "" || age === "" || reason === "") {
+            // فحص ما إذا كانت جميع الحقول قد تم تعبئتها
+            if (username === "" || fullname === "" || age === "" || reason === "") {
                 alert("يرجى الإجابة على جميع الأسئلة.");
                 return;
             }
 
-            // إرسال البيانات إلى ويبهوك
-            const webhookURL = "https://discord.com/api/webhooks/1397057419527323730/FvKT_sThcV87f4g-q9Q3wx_F_D-Jek_WyL5iOXBNzyf2MtM4D94VCYRkAv-zvsfpe1dg";  // ضع هنا رابط الويبهوك
+            // تحديد رابط الويبهوك الخاص بتقديم إعلام
+            const webhookURL = "https://discord.com/api/webhooks/1397058509094518805/8HwlqkO3geEHmd49JfKNi0DsMByETYv1tI-bYM5d_STOlsu7gSIHqG27XJ42KRufgdLv"; // رابط الويبهوك الخاص بتقديم إعلام
+
             const data = {
-                content: `إجابات الأسئلة:\nاسم المستخدم: ${username}\nالأسم الثلاثي: ${fullname}\nالعمر: ${age}\nسبب التقديم: ${reason}\nالقطاع المقدم عليه: ${sector}\nنوع التقديم: ${type}`,
+                content: `إجابات الأسئلة:\nاسم المستخدم: ${username}\nالأسم الثلاثي: ${fullname}\nالعمر: ${age}\nسبب التقديم: ${reason}\nالعصابات المقدمة عليها: ${sector}`,
             };
 
+            // إرسال البيانات إلى الويبهوك
             fetch(webhookURL, {
                 method: 'POST',
                 headers: {
@@ -119,12 +111,12 @@
             })
             .then(response => response.json())
             .then(() => {
-                // بعد إرسال البيانات، يتم نقل المستخدم إلى غرفة ديسكورد
-                window.location.href = 'https://discord.com/channels/1122293633329135688/1395872553607762122'; // ضع هنا رابط الغرفة
+                // إخبار المستخدم بنجاح العملية
+                alert("تم إرسال الإجابات بنجاح!");
             })
             .catch(error => {
                 console.error('حدث خطأ أثناء إرسال البيانات:', error);
-                alert("حدث خطأ أثناء إرسال الإجابات.");
+                alert("حدث خطأ أثناء إرسال الإجابات. يرجى المحاولة مرة أخرى.");
             });
         }
     </script>
