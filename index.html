@@ -1,93 +1,95 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>CR Token Control Panel</title>
+  <title>Token Control Panel</title>
   <style>
     body {
-      background: #0e0e0e;
-      color: #00ffee;
+      background-color: #121212;
+      color: #00ffe0;
       font-family: monospace;
+      padding: 20px;
       text-align: center;
-      padding: 2rem;
     }
-    textarea, input, select {
+    textarea, input {
       width: 90%;
-      background: #1c1c1c;
-      color: #00ffee;
-      border: 1px solid #00ffee;
       padding: 10px;
-      margin-bottom: 1rem;
-      border-radius: 6px;
+      margin: 10px 0;
+      border: 1px solid #00ffe0;
+      border-radius: 5px;
+      background-color: #1e1e1e;
+      color: #00ffe0;
     }
     button {
-      background: #00ffee;
+      background-color: #00ffe0;
       color: #000;
-      font-weight: bold;
       border: none;
       padding: 10px 20px;
-      border-radius: 6px;
+      margin: 5px;
+      font-weight: bold;
+      border-radius: 5px;
       cursor: pointer;
-      margin: 0.3rem;
+    }
+    button:hover {
+      background-color: #00c2a8;
     }
     .log {
-      white-space: pre-wrap;
-      text-align: left;
-      background: #111;
-      padding: 1rem;
-      margin-top: 1rem;
-      max-height: 300px;
+      margin-top: 20px;
+      background: #1e1e1e;
+      border: 1px solid #00ffe0;
+      padding: 10px;
+      height: 300px;
       overflow-y: auto;
-      border: 1px solid #00ffee;
-      border-radius: 6px;
+      text-align: left;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
 
-<h1>👑 CR Token Control Panel 🔥</h1>
+  <h2>💎 Token Control Panel - Classic</h2>
 
-<textarea id="tokensBox" placeholder="توكن في كل سطر..."></textarea><br>
-<input id="channelId" placeholder="🆔 Channel ID"><br>
-<input id="inviteLink" placeholder="🔗 Discord Invite Link (مثل https://discord.gg/abc123)"><br><br>
+  <textarea id="tokensBox" placeholder="توكن في كل سطر..."></textarea><br>
+  <input id="channelId" placeholder="🆔 ID الروم"><br>
+  <input id="inviteLink" placeholder="🔗 رابط الدعوة (مثل https://discord.gg/code)"><br>
 
-<button onclick="startAutoReaction()">🔁 Auto Reaction</button>
-<button onclick="startAutoGiveaway()">🎉 Auto Giveaway Join</button>
-<button onclick="joinViaInvite()">🔗 Auto Join Server</button>
-<button onclick="startSmartReply()">🧠 Smart Auto Reply</button>
-<button onclick="stopAuto()">⛔ Stop Auto</button>
+  <button onclick="startAutoReaction()">🔁 Auto Reaction</button>
+  <button onclick="startAutoGiveaway()">🎉 Auto Giveaway</button>
+  <button onclick="joinViaInvite()">🔗 Auto Join</button>
+  <button onclick="startSmartReply()">🧠 Smart Reply</button>
+  <button onclick="stopAll()">⛔ Stop All</button>
 
-<div class="log" id="logBox">📋 السجل سيظهر هنا...</div>
+  <div class="log" id="logBox">📋 السجل سيظهر هنا...</div>
 
 <script>
 let autoInterval = null;
 let replyIndex = 0;
-let smartMessages = ["🔥 خرافي", "😎 تمام", "🤣 حلوة", "👌 Nice", "💀💀"];
+let smartMessages = ["🔥 تمام", "👍 حلو", "😂 رهيب", "😎 جامد", "👑 ملك"];
 
 function getTokens() {
-  return document.getElementById("tokensBox").value.split('\n').map(t => t.trim()).filter(Boolean);
+  return document.getElementById('tokensBox').value.split('\n').map(t => t.trim()).filter(Boolean);
 }
 
 function log(msg) {
-  const logBox = document.getElementById("logBox");
+  const logBox = document.getElementById('logBox');
   logBox.innerText += `\n${new Date().toLocaleTimeString()} | ${msg}`;
   logBox.scrollTop = logBox.scrollHeight;
 }
 
-function stopAuto() {
+function stopAll() {
   clearInterval(autoInterval);
   autoInterval = null;
-  log("🛑 تم إيقاف جميع المهام التلقائية");
+  log("🛑 تم إيقاف كل المهام.");
 }
 
-// AUTO REACTION
+// Auto Reaction
 function startAutoReaction() {
   const tokens = getTokens();
   const channelId = document.getElementById('channelId').value.trim();
-  if (!channelId) return alert("🛑 اكتب Channel ID");
+  if (!channelId) return alert("اكتب Channel ID");
   clearInterval(autoInterval);
-  log("🚀 بدأ Auto Reaction...");
-  let lastMessageId = null;
+  log("🚀 بدأ Auto Reaction");
+  let lastId = null;
 
   autoInterval = setInterval(async () => {
     for (const token of tokens) {
@@ -95,31 +97,30 @@ function startAutoReaction() {
         const res = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages?limit=1`, {
           headers: { Authorization: token }
         });
-        const data = await res.json();
-        const message = data[0];
-        if (message && message.id !== lastMessageId) {
-          lastMessageId = message.id;
-          await fetch(`https://discord.com/api/v10/channels/${channelId}/messages/${message.id}/reactions/%F0%9F%91%8D/@me`, {
+        const msg = (await res.json())[0];
+        if (msg && msg.id !== lastId) {
+          lastId = msg.id;
+          await fetch(`https://discord.com/api/v10/channels/${channelId}/messages/${msg.id}/reactions/%F0%9F%91%8D/@me`, {
             method: "PUT",
             headers: { Authorization: token }
           });
-          log(`👍 React على رسالة ${message.id}`);
+          log(`👍 React على ${msg.id}`);
         }
       } catch {
-        log(`❌ خطأ في Auto Reaction`);
+        log("❌ خطأ في Auto Reaction");
       }
     }
   }, 3000);
 }
 
-// AUTO GIVEAWAY
+// Auto Giveaway
 function startAutoGiveaway() {
   const tokens = getTokens();
   const channelId = document.getElementById('channelId').value.trim();
-  if (!channelId) return alert("🛑 اكتب Channel ID");
+  if (!channelId) return alert("اكتب Channel ID");
   clearInterval(autoInterval);
-  log("🎉 بدأ Auto Giveaway Join...");
-  let lastMsg = null;
+  log("🎉 بدأ Auto Giveaway");
+  let lastId = null;
 
   autoInterval = setInterval(async () => {
     for (const token of tokens) {
@@ -127,67 +128,58 @@ function startAutoGiveaway() {
         const res = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages?limit=1`, {
           headers: { Authorization: token }
         });
-        const data = await res.json();
-        const msg = data[0];
-        if (!msg || msg.id === lastMsg) continue;
-        lastMsg = msg.id;
-
-        if (msg.content.includes("🎉") || msg.embeds?.some(e => e.title?.toLowerCase().includes("giveaway"))) {
+        const msg = (await res.json())[0];
+        if (msg && msg.id !== lastId && (msg.content.includes("🎉") || msg.embeds?.some(e => e.title?.toLowerCase().includes("giveaway")))) {
+          lastId = msg.id;
           await fetch(`https://discord.com/api/v10/channels/${channelId}/messages/${msg.id}/reactions/%F0%9F%8E%89/@me`, {
             method: "PUT",
             headers: { Authorization: token }
           });
-          log(`🎉 شارك تلقائي في ${msg.id}`);
+          log(`🎉 انضم للقيف ${msg.id}`);
         }
       } catch {
-        log("⚠️ خطأ في Auto Giveaway Join");
+        log("⚠️ خطأ في Auto Giveaway");
       }
     }
   }, 5000);
 }
 
-// AUTO JOIN SERVER
+// Auto Join Server
 function joinViaInvite() {
   const tokens = getTokens();
   const invite = document.getElementById("inviteLink").value.trim().split("/").pop();
-  if (!invite) return alert("🔗 أدخل رابط دعوة صالح!");
+  if (!invite) return alert("أدخل رابط دعوة صالح!");
   for (const token of tokens) {
     fetch(`https://discord.com/api/v10/invites/${invite}`, {
       method: "POST",
       headers: { Authorization: token }
     }).then(res => {
-      if (res.status === 200) {
-        log(`✅ ${token.slice(0, 20)}... انضم للسيرفر`);
-      } else {
-        log(`❌ فشل الانضمام: ${token.slice(0, 20)}...`);
-      }
-    }).catch(() => {
-      log(`❌ فشل الاتصال بـ Discord`);
-    });
+      log(res.status === 200
+        ? `✅ انضم ${token.slice(0, 20)}...`
+        : `❌ فشل الانضمام ${token.slice(0, 20)}...`);
+    }).catch(() => log("❌ فشل الاتصال بـ Discord"));
   }
 }
 
-// SMART AUTO REPLY
+// Smart Reply
 function startSmartReply() {
   const tokens = getTokens();
   const channelId = document.getElementById("channelId").value.trim();
-  if (!channelId) return alert("🆔 اكتب Channel ID");
+  if (!channelId) return alert("اكتب Channel ID");
   clearInterval(autoInterval);
-  log("🧠 بدأ Smart Auto Reply...");
-
+  log("🧠 بدأ Smart Auto Reply");
   let lastMsg = null;
+
   autoInterval = setInterval(async () => {
     for (const token of tokens) {
       try {
         const res = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages?limit=1`, {
           headers: { Authorization: token }
         });
-        const data = await res.json();
-        const msg = data[0];
+        const msg = (await res.json())[0];
         if (!msg || msg.id === lastMsg) continue;
         lastMsg = msg.id;
-        const reply = smartMessages[replyIndex % smartMessages.length];
-        replyIndex++;
+        const reply = smartMessages[replyIndex++ % smartMessages.length];
         await fetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
           method: "POST",
           headers: {
@@ -201,7 +193,7 @@ function startSmartReply() {
         });
         log(`💬 رد على ${msg.id}: ${reply}`);
       } catch {
-        log(`⚠️ خطأ في Smart Reply`);
+        log("⚠️ خطأ في Smart Reply");
       }
     }
   }, 5000);
