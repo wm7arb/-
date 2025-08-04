@@ -1,49 +1,55 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اختيار نوع التقديم</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #2E3B4E;
-            color: #fff;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        h1 {
-            margin-bottom: 20px;
-            font-size: 36px;
-        }
-        button {
-            padding: 15px 40px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 18px;
-            background-color: #34C759;
-            margin: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Token Control GUI</title>
+  <style>
+    body {
+      background: #111;
+      color: #0f0;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 2rem;
+      text-align: center;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      background: #222;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.7rem 1.5rem;
+      background: #00ff88;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background: #00cc66;
+    }
+    h1 {
+      margin-bottom: 1rem;
+      color: #00ffcc;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>اختار نوع التقديم</h1>
-        <!-- زر تقديم عسكرية -->
-        <button onclick="location.href='military_application.html'">تقديم عسكرية</button>
-        <!-- زر تقديم عصابات -->
-        <button onclick="location.href='gang_application.html'">تقديم عصابات</button>
-        <!-- زر تقديم إعلام -->
-        <button onclick="location.href='media_application.html'">تقديم إعلام</button>
-    </div>
+
+  <h1>🛠️ إدارة توكنات ديسكورد</h1>
+
+  <h2>📝 التوكنات (توكن في كل سطر)</h2>
+  <textarea id="tokensBox" placeholder="mfa.xxxxxxxxxxxxxx"></textarea>
+  <br>
+  <button onclick="saveTokens()">💾 حفظ التوكنات</button>
+
+  <script src="script.js"></script>
 </body>
 </html>
