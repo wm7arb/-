@@ -5,23 +5,23 @@
   <title>CR Token Manager 💎</title>
   <style>
     body {
-      background: #0d0d0d;
-      color: #00ffcc;
+      background: #0e0e0e;
+      color: #00ffee;
       font-family: monospace;
       padding: 2rem;
       text-align: center;
     }
     textarea, input {
       width: 90%;
-      background: #1a1a1a;
-      color: #00ffcc;
-      border: 1px solid #00ffcc;
+      background: #1c1c1c;
+      color: #00ffee;
+      border: 1px solid #00ffee;
       padding: 10px;
       margin-bottom: 1rem;
       border-radius: 6px;
     }
     button {
-      background: #00ffcc;
+      background: #00ffee;
       color: #000;
       font-weight: bold;
       border: none;
@@ -31,7 +31,7 @@
       margin: 0.5rem;
     }
     button:hover {
-      background: #00e6b8;
+      background: #00ddcc;
     }
     table {
       width: 100%;
@@ -39,26 +39,32 @@
       margin-top: 2rem;
     }
     th, td {
-      border: 1px solid #00ffcc;
+      border: 1px solid #00ffee;
       padding: 8px;
       text-align: center;
     }
     .valid { color: #00ff00; }
-    .invalid { color: #ff4444; }
+    .invalid { color: #ff3333; }
   </style>
 </head>
 <body>
 
-  <h1>🚀 CR Token Manager 💎</h1>
+  <h1>👑 CR Token Manager</h1>
 
   <textarea id="tokensBox" placeholder="توكن في كل سطر..."></textarea><br>
+  <input type="file" id="fileInput" onchange="importTokensFromFile()" /><br>
   <button onclick="verifyTokens()">✅ تحقق من التوكنات</button>
   <button onclick="downloadTokens()">💾 حفظ التوكنات</button>
 
   <hr><h2>📤 إرسال رسالة</h2>
-  <input id="channelId" placeholder="Channel ID">
-  <textarea id="msgContent" placeholder="محتوى الرسالة"></textarea><br>
-  <button onclick="sendToChannel()">📩 إرسال لجميع التوكنات</button>
+  <input id="channelId" placeholder="🆔 Channel ID">
+  <textarea id="msgContent" placeholder="محتوى الرسالة..."></textarea><br>
+  <button onclick="sendToChannel()">📩 إرسال الرسالة</button>
+
+  <hr><h2>📝 تغيير الاسم أو البايو</h2>
+  <input id="newName" placeholder="اسم جديد (اختياري)">
+  <input id="newBio" placeholder="بايو جديد (اختياري)"><br>
+  <button onclick="updateProfiles()">✏️ تحديث الحسابات</button>
 
   <div id="results"></div>
 
@@ -76,13 +82,23 @@
       link.click();
     }
 
+    function importTokensFromFile() {
+      const file = document.getElementById('fileInput').files[0];
+      if (!file) return alert("❌ لم يتم اختيار ملف");
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('tokensBox').value = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+
     async function verifyTokens() {
       const tokens = getTokens();
       const resultsDiv = document.getElementById('results');
       resultsDiv.innerHTML = '<p>جاري التحقق...</p>';
 
       let html = `<table><tr>
-        <th>الحالة</th><th>الاسم</th><th>ID</th><th>الإيميل</th><th>Nitro</th><th>التوكن</th>
+        <th>✅ الحالة</th><th>👤 الاسم</th><th>ID</th><th>📧 الإيميل</th><th>💎 Nitro</th><th>🎯 التوكن</th>
       </tr>`;
 
       for (const token of tokens) {
@@ -90,7 +106,7 @@
           const res = await fetch("https://discord.com/api/v9/users/@me", {
             headers: { Authorization: token }
           });
-          if (!res.ok) throw new Error("غير صالح");
+          if (!res.ok) throw new Error("Invalid");
           const data = await res.json();
           html += `<tr class="valid">
             <td>✅</td>
@@ -115,8 +131,7 @@
       const tokens = getTokens();
       const channelId = document.getElementById('channelId').value.trim();
       const message = document.getElementById('msgContent').value.trim();
-
-      if (!channelId || !message) return alert("🛑 لازم تكتب Channel ID ورسالة!");
+      if (!channelId || !message) return alert("🛑 املأ كل الحقول!");
 
       for (const token of tokens) {
         try {
@@ -126,7 +141,7 @@
               Authorization: token,
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ content: message, tts: false })
+            body: JSON.stringify({ content: message })
           });
           console.log(`✅ أُرسلت من: ${token.slice(0,15)}...`);
         } catch (e) {
@@ -134,7 +149,35 @@
         }
       }
 
-      alert("🚀 انتهى إرسال الرسائل");
+      alert("🚀 تم الإرسال");
+    }
+
+    async function updateProfiles() {
+      const tokens = getTokens();
+      const newName = document.getElementById('newName').value.trim();
+      const newBio = document.getElementById('newBio').value.trim();
+      if (!newName && !newBio) return alert("🛑 اكتب اسم أو بايو أول!");
+
+      for (const token of tokens) {
+        try {
+          const res = await fetch("https://discord.com/api/v9/users/@me", {
+            method: 'PATCH',
+            headers: {
+              Authorization: token,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              ...(newName && { username: newName }),
+              ...(newBio && { bio: newBio })
+            })
+          });
+          console.log(`✅ تم تحديث من: ${token.slice(0, 15)}...`);
+        } catch (e) {
+          console.warn(`❌ فشل تحديث: ${token.slice(0, 15)}...`);
+        }
+      }
+
+      alert("✏️ تم التحديث");
     }
   </script>
 
