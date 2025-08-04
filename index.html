@@ -2,14 +2,14 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>CR Token Manager 💎</title>
+  <title>CR Token Control Panel</title>
   <style>
     body {
       background: #0e0e0e;
       color: #00ffee;
       font-family: monospace;
-      padding: 2rem;
       text-align: center;
+      padding: 2rem;
     }
     textarea, input, select {
       width: 90%;
@@ -28,226 +28,183 @@
       padding: 10px 20px;
       border-radius: 6px;
       cursor: pointer;
-      margin: 0.5rem;
+      margin: 0.3rem;
     }
-    button:hover {
-      background: #00ccdd;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 2rem;
-    }
-    th, td {
+    .log {
+      white-space: pre-wrap;
+      text-align: left;
+      background: #111;
+      padding: 1rem;
+      margin-top: 1rem;
+      max-height: 300px;
+      overflow-y: auto;
       border: 1px solid #00ffee;
-      padding: 8px;
-      text-align: center;
+      border-radius: 6px;
     }
-    .valid { color: #00ff00; }
-    .invalid { color: #ff4444; }
   </style>
 </head>
 <body>
 
-  <h1>👑 CR Token Manager</h1>
+<h1>👑 CR Token Control Panel 🔥</h1>
 
-  <textarea id="tokensBox" placeholder="توكن في كل سطر..."></textarea><br>
-  <input type="file" id="fileInput" onchange="importTokensFromFile()" /><br>
-  <button onclick="verifyTokens()">✅ تحقق من التوكنات</button>
-  <button onclick="downloadTokens()">💾 حفظ التوكنات</button>
+<textarea id="tokensBox" placeholder="توكن في كل سطر..."></textarea><br>
+<input id="channelId" placeholder="🆔 Channel ID"><br>
+<input id="inviteLink" placeholder="🔗 Discord Invite Link (مثل https://discord.gg/abc123)"><br><br>
 
-  <hr><h2>📤 إرسال رسالة</h2>
-  <input id="channelId" placeholder="🆔 Channel ID">
-  <textarea id="msgContent" placeholder="محتوى الرسالة..."></textarea><br>
-  <button onclick="sendToChannel()">📩 إرسال الرسالة</button>
+<button onclick="startAutoReaction()">🔁 Auto Reaction</button>
+<button onclick="startAutoGiveaway()">🎉 Auto Giveaway Join</button>
+<button onclick="joinViaInvite()">🔗 Auto Join Server</button>
+<button onclick="startSmartReply()">🧠 Smart Auto Reply</button>
+<button onclick="stopAuto()">⛔ Stop Auto</button>
 
-  <hr><h2>📝 تغيير الاسم أو البايو</h2>
-  <input id="newName" placeholder="اسم جديد (اختياري)">
-  <input id="newBio" placeholder="بايو جديد (اختياري)"><br>
-  <button onclick="updateProfiles()">✏️ تحديث الحسابات</button>
-
-  <hr><h2>💣 سبام متقدم</h2>
-  <input type="file" id="spamFile" accept=".txt" onchange="loadSpamMessages()" /><br>
-  <select id="spamMode">
-    <option value="sequential">🔁 تسلسلي</option>
-    <option value="random">🎲 عشوائي</option>
-  </select><br>
-  <input type="number" id="spamCountInput" placeholder="عدد الرسائل (مثلاً 10)" /><br>
-  <textarea id="fixedSpamMsg" placeholder="أو اكتب رسالة ثابتة هنا (يُتجاهل الملف لو استخدمتها)"></textarea><br>
-  <button onclick="sendFixedSpam()">🚀 إرسال بعدد معين</button>
-  <button onclick="startInfiniteSpam()">♾️ سبام لا نهائي</button>
-  <button onclick="stopSpam()">🛑 إيقاف السبام</button>
-  <div id="spamStatus" style="margin-top:10px; color:#00ffaa;"></div>
-
-  <div id="results"></div>
+<div class="log" id="logBox">📋 السجل سيظهر هنا...</div>
 
 <script>
+let autoInterval = null;
+let replyIndex = 0;
+let smartMessages = ["🔥 خرافي", "😎 تمام", "🤣 حلوة", "👌 Nice", "💀💀"];
+
 function getTokens() {
-  return document.getElementById('tokensBox').value.split('\n').map(t => t.trim()).filter(Boolean);
+  return document.getElementById("tokensBox").value.split('\n').map(t => t.trim()).filter(Boolean);
 }
 
-function importTokensFromFile() {
-  const file = document.getElementById('fileInput').files[0];
-  if (!file) return alert("❌ لم يتم اختيار ملف");
-  const reader = new FileReader();
-  reader.onload = e => document.getElementById('tokensBox').value = e.target.result;
-  reader.readAsText(file);
+function log(msg) {
+  const logBox = document.getElementById("logBox");
+  logBox.innerText += `\n${new Date().toLocaleTimeString()} | ${msg}`;
+  logBox.scrollTop = logBox.scrollHeight;
 }
 
-function downloadTokens() {
-  const tokens = document.getElementById('tokensBox').value.trim();
-  const blob = new Blob([tokens], { type: 'text/plain' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'tokens.txt';
-  link.click();
+function stopAuto() {
+  clearInterval(autoInterval);
+  autoInterval = null;
+  log("🛑 تم إيقاف جميع المهام التلقائية");
 }
 
-async function verifyTokens() {
-  const tokens = getTokens();
-  const resultsDiv = document.getElementById('results');
-  resultsDiv.innerHTML = '<p>جاري التحقق...</p>';
-  let html = `<table><tr>
-    <th>✅</th><th>👤 الاسم</th><th>ID</th><th>📧</th><th>🎁 Nitro</th><th>🔐 توكن</th>
-  </tr>`;
-  for (const token of tokens) {
-    try {
-      const res = await fetch("https://discord.com/api/v9/users/@me", {
-        headers: { Authorization: token }
-      });
-      if (!res.ok) throw new Error("Invalid");
-      const data = await res.json();
-      html += `<tr class="valid">
-        <td>✅</td><td>${data.username}#${data.discriminator}</td>
-        <td>${data.id}</td><td>${data.email || '—'}</td>
-        <td>${data.premium_type ? (data.premium_type === 2 ? "Full" : "Classic") : "None"}</td>
-        <td>${token.slice(0, 25)}...</td>
-      </tr>`;
-    } catch {
-      html += `<tr class="invalid"><td>❌</td><td colspan="5">${token.slice(0,25)}... غير صالح</td></tr>`;
-    }
-  }
-  html += '</table>';
-  resultsDiv.innerHTML = html;
-}
-
-async function sendToChannel() {
+// AUTO REACTION
+function startAutoReaction() {
   const tokens = getTokens();
   const channelId = document.getElementById('channelId').value.trim();
-  const message = document.getElementById('msgContent').value.trim();
-  if (!channelId || !message) return alert("🛑 املأ الحقول");
-  for (const token of tokens) {
-    await fetch(`https://discord.com/api/v9/channels/${channelId}/messages`, {
-      method: 'POST',
-      headers: {
-        Authorization: token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ content: message })
-    });
-  }
-  alert("✅ تم الإرسال");
-}
-
-async function updateProfiles() {
-  const tokens = getTokens();
-  const newName = document.getElementById('newName').value.trim();
-  const newBio = document.getElementById('newBio').value.trim();
-  if (!newName && !newBio) return alert("🛑 اكتب اسم أو بايو أول!");
-  for (const token of tokens) {
-    await fetch("https://discord.com/api/v9/users/@me", {
-      method: 'PATCH',
-      headers: {
-        Authorization: token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ...(newName && { username: newName }),
-        ...(newBio && { bio: newBio })
-      })
-    });
-  }
-  alert("✏️ تم التحديث");
-}
-
-let spamMessages = [];
-let spamIndex = 0;
-let spamRunning = false;
-let spamInterval = null;
-
-function loadSpamMessages() {
-  const file = document.getElementById("spamFile").files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    spamMessages = e.target.result.split("\n").map(l => l.trim()).filter(Boolean);
-    document.getElementById("spamStatus").innerText = `📄 تم تحميل ${spamMessages.length} رسالة`;
-  };
-  reader.readAsText(file);
-}
-
-function getSpamMessage() {
-  const fixed = document.getElementById("fixedSpamMsg").value.trim();
-  if (fixed) return fixed;
-  const mode = document.getElementById("spamMode").value;
-  if (spamMessages.length === 0) return "";
-  if (mode === "random") {
-    const i = Math.floor(Math.random() * spamMessages.length);
-    return spamMessages[i];
-  } else {
-    const msg = spamMessages[spamIndex];
-    spamIndex = (spamIndex + 1) % spamMessages.length;
-    return msg;
-  }
-}
-
-async function sendFixedSpam() {
-  const count = parseInt(document.getElementById("spamCountInput").value);
-  const tokens = getTokens();
-  const channelId = document.getElementById("channelId").value.trim();
-  if (!channelId || isNaN(count)) return alert("🛑 املأ الحقول");
-  for (let i = 0; i < count; i++) {
-    for (const token of tokens) {
-      const msg = getSpamMessage();
-      await fetch(`https://discord.com/api/v9/channels/${channelId}/messages`, {
-        method: 'POST',
-        headers: {
-          Authorization: token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ content: msg })
-      });
-    }
-  }
-  alert("✅ تم السبام المحدود");
-}
-
-function startInfiniteSpam() {
-  const tokens = getTokens();
-  const channelId = document.getElementById("channelId").value.trim();
   if (!channelId) return alert("🛑 اكتب Channel ID");
-  spamRunning = true;
-  spamInterval = setInterval(() => {
-    if (!spamRunning) return;
+  clearInterval(autoInterval);
+  log("🚀 بدأ Auto Reaction...");
+  let lastMessageId = null;
+
+  autoInterval = setInterval(async () => {
     for (const token of tokens) {
-      const msg = getSpamMessage();
-      fetch(`https://discord.com/api/v9/channels/${channelId}/messages`, {
-        method: 'POST',
-        headers: {
-          Authorization: token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ content: msg })
-      });
+      try {
+        const res = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages?limit=1`, {
+          headers: { Authorization: token }
+        });
+        const data = await res.json();
+        const message = data[0];
+        if (message && message.id !== lastMessageId) {
+          lastMessageId = message.id;
+          await fetch(`https://discord.com/api/v10/channels/${channelId}/messages/${message.id}/reactions/%F0%9F%91%8D/@me`, {
+            method: "PUT",
+            headers: { Authorization: token }
+          });
+          log(`👍 React على رسالة ${message.id}`);
+        }
+      } catch {
+        log(`❌ خطأ في Auto Reaction`);
+      }
     }
-  }, 1000);
-  document.getElementById("spamStatus").innerText = "♾️ سبام لا نهائي يعمل...";
+  }, 3000);
 }
 
-function stopSpam() {
-  spamRunning = false;
-  clearInterval(spamInterval);
-  document.getElementById("spamStatus").innerText = "⛔ تم إيقاف السبام.";
+// AUTO GIVEAWAY
+function startAutoGiveaway() {
+  const tokens = getTokens();
+  const channelId = document.getElementById('channelId').value.trim();
+  if (!channelId) return alert("🛑 اكتب Channel ID");
+  clearInterval(autoInterval);
+  log("🎉 بدأ Auto Giveaway Join...");
+  let lastMsg = null;
+
+  autoInterval = setInterval(async () => {
+    for (const token of tokens) {
+      try {
+        const res = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages?limit=1`, {
+          headers: { Authorization: token }
+        });
+        const data = await res.json();
+        const msg = data[0];
+        if (!msg || msg.id === lastMsg) continue;
+        lastMsg = msg.id;
+
+        if (msg.content.includes("🎉") || msg.embeds?.some(e => e.title?.toLowerCase().includes("giveaway"))) {
+          await fetch(`https://discord.com/api/v10/channels/${channelId}/messages/${msg.id}/reactions/%F0%9F%8E%89/@me`, {
+            method: "PUT",
+            headers: { Authorization: token }
+          });
+          log(`🎉 شارك تلقائي في ${msg.id}`);
+        }
+      } catch {
+        log("⚠️ خطأ في Auto Giveaway Join");
+      }
+    }
+  }, 5000);
+}
+
+// AUTO JOIN SERVER
+function joinViaInvite() {
+  const tokens = getTokens();
+  const invite = document.getElementById("inviteLink").value.trim().split("/").pop();
+  if (!invite) return alert("🔗 أدخل رابط دعوة صالح!");
+  for (const token of tokens) {
+    fetch(`https://discord.com/api/v10/invites/${invite}`, {
+      method: "POST",
+      headers: { Authorization: token }
+    }).then(res => {
+      if (res.status === 200) {
+        log(`✅ ${token.slice(0, 20)}... انضم للسيرفر`);
+      } else {
+        log(`❌ فشل الانضمام: ${token.slice(0, 20)}...`);
+      }
+    }).catch(() => {
+      log(`❌ فشل الاتصال بـ Discord`);
+    });
+  }
+}
+
+// SMART AUTO REPLY
+function startSmartReply() {
+  const tokens = getTokens();
+  const channelId = document.getElementById("channelId").value.trim();
+  if (!channelId) return alert("🆔 اكتب Channel ID");
+  clearInterval(autoInterval);
+  log("🧠 بدأ Smart Auto Reply...");
+
+  let lastMsg = null;
+  autoInterval = setInterval(async () => {
+    for (const token of tokens) {
+      try {
+        const res = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages?limit=1`, {
+          headers: { Authorization: token }
+        });
+        const data = await res.json();
+        const msg = data[0];
+        if (!msg || msg.id === lastMsg) continue;
+        lastMsg = msg.id;
+        const reply = smartMessages[replyIndex % smartMessages.length];
+        replyIndex++;
+        await fetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
+          method: "POST",
+          headers: {
+            "Authorization": token,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            content: reply,
+            message_reference: { message_id: msg.id }
+          })
+        });
+        log(`💬 رد على ${msg.id}: ${reply}`);
+      } catch {
+        log(`⚠️ خطأ في Smart Reply`);
+      }
+    }
+  }, 5000);
 }
 </script>
 
