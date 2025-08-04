@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>CR Token Manager 💎</title>
   <style>
     body {
@@ -11,7 +11,7 @@
       padding: 2rem;
       text-align: center;
     }
-    textarea, input {
+    textarea, input, select {
       width: 90%;
       background: #1c1c1c;
       color: #00ffee;
@@ -31,7 +31,7 @@
       margin: 0.5rem;
     }
     button:hover {
-      background: #00ddcc;
+      background: #00ccdd;
     }
     table {
       width: 100%;
@@ -44,7 +44,7 @@
       text-align: center;
     }
     .valid { color: #00ff00; }
-    .invalid { color: #ff3333; }
+    .invalid { color: #ff4444; }
   </style>
 </head>
 <body>
@@ -66,120 +66,190 @@
   <input id="newBio" placeholder="بايو جديد (اختياري)"><br>
   <button onclick="updateProfiles()">✏️ تحديث الحسابات</button>
 
+  <hr><h2>💣 سبام متقدم</h2>
+  <input type="file" id="spamFile" accept=".txt" onchange="loadSpamMessages()" /><br>
+  <select id="spamMode">
+    <option value="sequential">🔁 تسلسلي</option>
+    <option value="random">🎲 عشوائي</option>
+  </select><br>
+  <input type="number" id="spamCountInput" placeholder="عدد الرسائل (مثلاً 10)" /><br>
+  <textarea id="fixedSpamMsg" placeholder="أو اكتب رسالة ثابتة هنا (يُتجاهل الملف لو استخدمتها)"></textarea><br>
+  <button onclick="sendFixedSpam()">🚀 إرسال بعدد معين</button>
+  <button onclick="startInfiniteSpam()">♾️ سبام لا نهائي</button>
+  <button onclick="stopSpam()">🛑 إيقاف السبام</button>
+  <div id="spamStatus" style="margin-top:10px; color:#00ffaa;"></div>
+
   <div id="results"></div>
 
-  <script>
-    function getTokens() {
-      return document.getElementById('tokensBox').value.split('\n').map(t => t.trim()).filter(Boolean);
-    }
+<script>
+function getTokens() {
+  return document.getElementById('tokensBox').value.split('\n').map(t => t.trim()).filter(Boolean);
+}
 
-    function downloadTokens() {
-      const tokens = document.getElementById('tokensBox').value.trim();
-      const blob = new Blob([tokens], { type: 'text/plain' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'tokens.txt';
-      link.click();
-    }
+function importTokensFromFile() {
+  const file = document.getElementById('fileInput').files[0];
+  if (!file) return alert("❌ لم يتم اختيار ملف");
+  const reader = new FileReader();
+  reader.onload = e => document.getElementById('tokensBox').value = e.target.result;
+  reader.readAsText(file);
+}
 
-    function importTokensFromFile() {
-      const file = document.getElementById('fileInput').files[0];
-      if (!file) return alert("❌ لم يتم اختيار ملف");
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('tokensBox').value = e.target.result;
-      };
-      reader.readAsText(file);
-    }
+function downloadTokens() {
+  const tokens = document.getElementById('tokensBox').value.trim();
+  const blob = new Blob([tokens], { type: 'text/plain' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'tokens.txt';
+  link.click();
+}
 
-    async function verifyTokens() {
-      const tokens = getTokens();
-      const resultsDiv = document.getElementById('results');
-      resultsDiv.innerHTML = '<p>جاري التحقق...</p>';
-
-      let html = `<table><tr>
-        <th>✅ الحالة</th><th>👤 الاسم</th><th>ID</th><th>📧 الإيميل</th><th>💎 Nitro</th><th>🎯 التوكن</th>
+async function verifyTokens() {
+  const tokens = getTokens();
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.innerHTML = '<p>جاري التحقق...</p>';
+  let html = `<table><tr>
+    <th>✅</th><th>👤 الاسم</th><th>ID</th><th>📧</th><th>🎁 Nitro</th><th>🔐 توكن</th>
+  </tr>`;
+  for (const token of tokens) {
+    try {
+      const res = await fetch("https://discord.com/api/v9/users/@me", {
+        headers: { Authorization: token }
+      });
+      if (!res.ok) throw new Error("Invalid");
+      const data = await res.json();
+      html += `<tr class="valid">
+        <td>✅</td><td>${data.username}#${data.discriminator}</td>
+        <td>${data.id}</td><td>${data.email || '—'}</td>
+        <td>${data.premium_type ? (data.premium_type === 2 ? "Full" : "Classic") : "None"}</td>
+        <td>${token.slice(0, 25)}...</td>
       </tr>`;
-
-      for (const token of tokens) {
-        try {
-          const res = await fetch("https://discord.com/api/v9/users/@me", {
-            headers: { Authorization: token }
-          });
-          if (!res.ok) throw new Error("Invalid");
-          const data = await res.json();
-          html += `<tr class="valid">
-            <td>✅</td>
-            <td>${data.username}#${data.discriminator}</td>
-            <td>${data.id}</td>
-            <td>${data.email || '—'}</td>
-            <td>${data.premium_type ? (data.premium_type === 2 ? "Full" : "Classic") : "None"}</td>
-            <td>${token.slice(0, 30)}...</td>
-          </tr>`;
-        } catch (e) {
-          html += `<tr class="invalid">
-            <td>❌</td><td colspan="5">${token.slice(0, 30)}... غير صالح</td>
-          </tr>`;
-        }
-      }
-
-      html += '</table>';
-      resultsDiv.innerHTML = html;
+    } catch {
+      html += `<tr class="invalid"><td>❌</td><td colspan="5">${token.slice(0,25)}... غير صالح</td></tr>`;
     }
+  }
+  html += '</table>';
+  resultsDiv.innerHTML = html;
+}
 
-    async function sendToChannel() {
-      const tokens = getTokens();
-      const channelId = document.getElementById('channelId').value.trim();
-      const message = document.getElementById('msgContent').value.trim();
-      if (!channelId || !message) return alert("🛑 املأ كل الحقول!");
+async function sendToChannel() {
+  const tokens = getTokens();
+  const channelId = document.getElementById('channelId').value.trim();
+  const message = document.getElementById('msgContent').value.trim();
+  if (!channelId || !message) return alert("🛑 املأ الحقول");
+  for (const token of tokens) {
+    await fetch(`https://discord.com/api/v9/channels/${channelId}/messages`, {
+      method: 'POST',
+      headers: {
+        Authorization: token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ content: message })
+    });
+  }
+  alert("✅ تم الإرسال");
+}
 
-      for (const token of tokens) {
-        try {
-          await fetch(`https://discord.com/api/v9/channels/${channelId}/messages`, {
-            method: 'POST',
-            headers: {
-              Authorization: token,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ content: message })
-          });
-          console.log(`✅ أُرسلت من: ${token.slice(0,15)}...`);
-        } catch (e) {
-          console.warn(`❌ فشل من: ${token.slice(0,15)}...`);
-        }
-      }
+async function updateProfiles() {
+  const tokens = getTokens();
+  const newName = document.getElementById('newName').value.trim();
+  const newBio = document.getElementById('newBio').value.trim();
+  if (!newName && !newBio) return alert("🛑 اكتب اسم أو بايو أول!");
+  for (const token of tokens) {
+    await fetch("https://discord.com/api/v9/users/@me", {
+      method: 'PATCH',
+      headers: {
+        Authorization: token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ...(newName && { username: newName }),
+        ...(newBio && { bio: newBio })
+      })
+    });
+  }
+  alert("✏️ تم التحديث");
+}
 
-      alert("🚀 تم الإرسال");
+let spamMessages = [];
+let spamIndex = 0;
+let spamRunning = false;
+let spamInterval = null;
+
+function loadSpamMessages() {
+  const file = document.getElementById("spamFile").files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    spamMessages = e.target.result.split("\n").map(l => l.trim()).filter(Boolean);
+    document.getElementById("spamStatus").innerText = `📄 تم تحميل ${spamMessages.length} رسالة`;
+  };
+  reader.readAsText(file);
+}
+
+function getSpamMessage() {
+  const fixed = document.getElementById("fixedSpamMsg").value.trim();
+  if (fixed) return fixed;
+  const mode = document.getElementById("spamMode").value;
+  if (spamMessages.length === 0) return "";
+  if (mode === "random") {
+    const i = Math.floor(Math.random() * spamMessages.length);
+    return spamMessages[i];
+  } else {
+    const msg = spamMessages[spamIndex];
+    spamIndex = (spamIndex + 1) % spamMessages.length;
+    return msg;
+  }
+}
+
+async function sendFixedSpam() {
+  const count = parseInt(document.getElementById("spamCountInput").value);
+  const tokens = getTokens();
+  const channelId = document.getElementById("channelId").value.trim();
+  if (!channelId || isNaN(count)) return alert("🛑 املأ الحقول");
+  for (let i = 0; i < count; i++) {
+    for (const token of tokens) {
+      const msg = getSpamMessage();
+      await fetch(`https://discord.com/api/v9/channels/${channelId}/messages`, {
+        method: 'POST',
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content: msg })
+      });
     }
+  }
+  alert("✅ تم السبام المحدود");
+}
 
-    async function updateProfiles() {
-      const tokens = getTokens();
-      const newName = document.getElementById('newName').value.trim();
-      const newBio = document.getElementById('newBio').value.trim();
-      if (!newName && !newBio) return alert("🛑 اكتب اسم أو بايو أول!");
-
-      for (const token of tokens) {
-        try {
-          const res = await fetch("https://discord.com/api/v9/users/@me", {
-            method: 'PATCH',
-            headers: {
-              Authorization: token,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              ...(newName && { username: newName }),
-              ...(newBio && { bio: newBio })
-            })
-          });
-          console.log(`✅ تم تحديث من: ${token.slice(0, 15)}...`);
-        } catch (e) {
-          console.warn(`❌ فشل تحديث: ${token.slice(0, 15)}...`);
-        }
-      }
-
-      alert("✏️ تم التحديث");
+function startInfiniteSpam() {
+  const tokens = getTokens();
+  const channelId = document.getElementById("channelId").value.trim();
+  if (!channelId) return alert("🛑 اكتب Channel ID");
+  spamRunning = true;
+  spamInterval = setInterval(() => {
+    if (!spamRunning) return;
+    for (const token of tokens) {
+      const msg = getSpamMessage();
+      fetch(`https://discord.com/api/v9/channels/${channelId}/messages`, {
+        method: 'POST',
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content: msg })
+      });
     }
-  </script>
+  }, 1000);
+  document.getElementById("spamStatus").innerText = "♾️ سبام لا نهائي يعمل...";
+}
+
+function stopSpam() {
+  spamRunning = false;
+  clearInterval(spamInterval);
+  document.getElementById("spamStatus").innerText = "⛔ تم إيقاف السبام.";
+}
+</script>
 
 </body>
 </html>
