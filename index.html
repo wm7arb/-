@@ -5,114 +5,118 @@
   <title>لوحة التوكنات | Hacks Plus</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    * {margin: 0; padding: 0; box-sizing: border-box;}
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f4f4;
-      display: flex;
-      height: 100vh;
-      direction: rtl;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
     }
-    aside {
-      width: 260px;
+
+    header {
       background-color: #111827;
       color: #fff;
       padding: 20px;
+      text-align: center;
+      font-size: 24px;
+    }
+
+    nav {
+      background-color: #1f2937;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      padding: 15px 0;
     }
-    aside h2 {
-      font-size: 24px;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-    aside nav a {
-      color: #fff;
+
+    nav a {
+      color: white;
       text-decoration: none;
-      padding: 15px;
-      margin: 5px 0;
-      border-radius: 5px;
+      margin: 8px 0;
+      padding: 10px 20px;
+      border-radius: 6px;
       transition: background 0.2s;
-      display: block;
     }
-    aside nav a:hover {
+
+    nav a:hover {
       background-color: #374151;
     }
+
     main {
-      flex: 1;
-      padding: 30px;
-      overflow-y: auto;
+      padding: 20px;
     }
-    .header {
-      font-size: 28px;
-      margin-bottom: 20px;
-      color: #111827;
-    }
-    .token-status {
+
+    .token-box {
       background-color: #fff;
-      border: 1px solid #ddd;
+      border: 1px solid #ccc;
       padding: 15px;
-      border-radius: 8px;
       margin-bottom: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      border-radius: 8px;
     }
-    .token-status img {
+
+    .token-box img {
       width: 40px;
       height: 40px;
       border-radius: 50%;
+      margin-top: 10px;
     }
-    .status-good { color: green; }
-    .status-bad { color: red; }
-    .btn {
-      padding: 8px 16px;
-      border: none;
+
+    .status-good {
+      color: green;
+      font-weight: bold;
+    }
+
+    .status-bad {
+      color: red;
+      font-weight: bold;
+    }
+
+    button {
       background-color: #2563eb;
       color: white;
-      border-radius: 5px;
-      cursor: pointer;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      width: 100%;
+      margin-top: 10px;
     }
-    .btn:hover {
+
+    button:hover {
       background-color: #1d4ed8;
     }
   </style>
 </head>
 <body>
 
-  <aside>
-    <h2>Hacks Plus</h2>
-    <nav>
-      <a href="#">الرئيسية</a>
-      <a href="#">إدارة التوكنات</a>
-      <a href="#">الإحصائيات</a>
-      <a href="#">إرسال الرسائل</a>
-      <a href="#">تغيير البايو/الاسم</a>
-      <a href="#">الإعدادات</a>
-    </nav>
-  </aside>
+  <header>لوحة التوكنات - Hacks Plus</header>
+
+  <nav>
+    <a href="#">الرئيسية</a>
+    <a href="#">إدارة التوكنات</a>
+    <a href="#">إحصائيات</a>
+    <a href="#">إرسال الرسائل</a>
+    <a href="#">تغيير الاسم/البايو</a>
+    <a href="#">الإعدادات</a>
+  </nav>
 
   <main>
-    <div class="header">قائمة التوكنات</div>
+    <h2>قائمة التوكنات (تجريبية فقط)</h2>
 
-    <!-- نموذج للتوكن -->
-    <div class="token-status">
-      <div>
-        <strong>اسم المستخدم:</strong> @Username<br>
-        <span class="status-good">✅ توكن صالح</span>
-      </div>
-      <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar">
+    <div class="token-box">
+      <div>اسم المستخدم: @Crizix</div>
+      <div class="status-good">✅ توكن صالح</div>
+      <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="صورة">
     </div>
 
-    <div class="token-status">
-      <div>
-        <strong>اسم المستخدم:</strong> غير معروف<br>
-        <span class="status-bad">❌ توكن غير صالح</span>
-      </div>
-      <img src="https://cdn.discordapp.com/embed/avatars/1.png" alt="Avatar">
+    <div class="token-box">
+      <div>اسم المستخدم: غير معروف</div>
+      <div class="status-bad">❌ توكن غير صالح</div>
+      <img src="https://cdn.discordapp.com/embed/avatars/1.png" alt="صورة">
     </div>
 
-    <button class="btn">تحقق من التوكنات</button>
+    <button onclick="alert('هذه مجرد واجهة عرض! يجب تشغيل backend محلي لقراءة التوكنات')">
+      تحقق من التوكنات
+    </button>
   </main>
 
 </body>
