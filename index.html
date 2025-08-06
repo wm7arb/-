@@ -5,7 +5,7 @@
   <title>Token Control Panel</title>
   <style>
     body {
-      background-color: #121212;
+      background: #121212;
       color: #00ffe0;
       font-family: monospace;
       padding: 20px;
@@ -25,7 +25,7 @@
       color: #000;
       border: none;
       padding: 10px 20px;
-      margin: 5px;
+      margin: 5px 0;
       font-weight: bold;
       border-radius: 5px;
       cursor: pointer;
@@ -47,16 +47,20 @@
 </head>
 <body>
 
-  <h2>💎 Token Control Panel - Classic</h2>
+  <h2>💎 Token Control Panel - الأسطوري</h2>
 
-  <textarea id="tokensBox" placeholder="توكن في كل سطر..."></textarea><br>
-  <input id="channelId" placeholder="🆔 ID الروم"><br>
-  <input id="inviteLink" placeholder="🔗 رابط الدعوة (مثل https://discord.gg/code)"><br>
+  <textarea id="tokensBox" placeholder="توكن في كل سطر..."></textarea>
+  <input id="channelId" placeholder="🆔 ID الروم">
+  <input id="inviteLink" placeholder="🔗 رابط الدعوة (مثل https://discord.gg/code)">
+  <input id="spamMessage" placeholder="📩 رسالة السبام">
+  <input id="spamCount" type="number" placeholder="🔁 عدد الرسائل (للسبام)">
 
+  <button onclick="checkTokens()">✅ فحص التوكنات</button>
   <button onclick="startAutoReaction()">🔁 Auto Reaction</button>
   <button onclick="startAutoGiveaway()">🎉 Auto Giveaway</button>
   <button onclick="joinViaInvite()">🔗 Auto Join</button>
   <button onclick="startSmartReply()">🧠 Smart Reply</button>
+  <button onclick="startSpam()">📢 Spam Message</button>
   <button onclick="stopAll()">⛔ Stop All</button>
 
   <div class="log" id="logBox">📋 السجل سيظهر هنا...</div>
@@ -82,13 +86,32 @@ function stopAll() {
   log("🛑 تم إيقاف كل المهام.");
 }
 
+// ✅ Check Tokens
+function checkTokens() {
+  const tokens = getTokens();
+  tokens.forEach(token => {
+    fetch("https://discord.com/api/v10/users/@me", {
+      headers: { Authorization: token }
+    })
+    .then(res => res.json().then(data => ({ status: res.status, data })))
+    .then(({ status, data }) => {
+      if (status === 200) {
+        log(`✅ شغال: ${token.slice(0, 20)}... (${data.username}#${data.discriminator})`);
+      } else {
+        log(`❌ خربان: ${token.slice(0, 20)}...`);
+      }
+    })
+    .catch(() => log(`❌ فشل التحقق من التوكن: ${token.slice(0, 20)}...`));
+  });
+}
+
 // Auto Reaction
 function startAutoReaction() {
   const tokens = getTokens();
   const channelId = document.getElementById('channelId').value.trim();
   if (!channelId) return alert("اكتب Channel ID");
   clearInterval(autoInterval);
-  log("🚀 بدأ Auto Reaction");
+  log("🚀 Auto Reaction بدأ");
   let lastId = null;
 
   autoInterval = setInterval(async () => {
@@ -119,7 +142,7 @@ function startAutoGiveaway() {
   const channelId = document.getElementById('channelId').value.trim();
   if (!channelId) return alert("اكتب Channel ID");
   clearInterval(autoInterval);
-  log("🎉 بدأ Auto Giveaway");
+  log("🎉 Auto Giveaway بدأ");
   let lastId = null;
 
   autoInterval = setInterval(async () => {
@@ -148,7 +171,7 @@ function startAutoGiveaway() {
 function joinViaInvite() {
   const tokens = getTokens();
   const invite = document.getElementById("inviteLink").value.trim().split("/").pop();
-  if (!invite) return alert("أدخل رابط دعوة صالح!");
+  if (!invite) return alert("أدخل رابط دعوة!");
   for (const token of tokens) {
     fetch(`https://discord.com/api/v10/invites/${invite}`, {
       method: "POST",
@@ -167,7 +190,7 @@ function startSmartReply() {
   const channelId = document.getElementById("channelId").value.trim();
   if (!channelId) return alert("اكتب Channel ID");
   clearInterval(autoInterval);
-  log("🧠 بدأ Smart Auto Reply");
+  log("🧠 Smart Reply بدأ");
   let lastMsg = null;
 
   autoInterval = setInterval(async () => {
@@ -197,6 +220,30 @@ function startSmartReply() {
       }
     }
   }, 5000);
+}
+
+// Spam
+function startSpam() {
+  const tokens = getTokens();
+  const channelId = document.getElementById('channelId').value.trim();
+  const message = document.getElementById('spamMessage').value.trim();
+  const count = parseInt(document.getElementById('spamCount').value);
+  if (!channelId || !message || isNaN(count)) return alert("املأ كل الحقول");
+
+  for (const token of tokens) {
+    for (let i = 0; i < count; i++) {
+      fetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
+        method: "POST",
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ content: message })
+      })
+      .then(() => log(`📨 أرسل: ${message}`))
+      .catch(() => log("❌ فشل الإرسال"));
+    }
+  }
 }
 </script>
 
