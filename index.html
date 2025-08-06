@@ -1,88 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Discord Token Control Hub</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <title>لوحة التوكنات | Hacks Plus</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* ستايل كامل من ملفك */
-    /* ... (تمت كتابته بالكامل مسبقًا) */
+    * {margin: 0; padding: 0; box-sizing: border-box;}
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      height: 100vh;
+      direction: rtl;
+    }
+    aside {
+      width: 260px;
+      background-color: #111827;
+      color: #fff;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    aside h2 {
+      font-size: 24px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    aside nav a {
+      color: #fff;
+      text-decoration: none;
+      padding: 15px;
+      margin: 5px 0;
+      border-radius: 5px;
+      transition: background 0.2s;
+      display: block;
+    }
+    aside nav a:hover {
+      background-color: #374151;
+    }
+    main {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+    .header {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #111827;
+    }
+    .token-status {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .token-status img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+    .status-good { color: green; }
+    .status-bad { color: red; }
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      background-color: #2563eb;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #1d4ed8;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="welcome-screen" id="welcomeScreen">
-      <h1>Discord Token Control Hub</h1>
-      <p>Advanced management for your Discord tokens with a cyber interface.</p>
-      <button id="startBtn" class="start-btn">Initialize System</button>
+
+  <aside>
+    <h2>Hacks Plus</h2>
+    <nav>
+      <a href="#">الرئيسية</a>
+      <a href="#">إدارة التوكنات</a>
+      <a href="#">الإحصائيات</a>
+      <a href="#">إرسال الرسائل</a>
+      <a href="#">تغيير البايو/الاسم</a>
+      <a href="#">الإعدادات</a>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="header">قائمة التوكنات</div>
+
+    <!-- نموذج للتوكن -->
+    <div class="token-status">
+      <div>
+        <strong>اسم المستخدم:</strong> @Username<br>
+        <span class="status-good">✅ توكن صالح</span>
+      </div>
+      <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar">
     </div>
 
-    <div class="checker-screen hidden" id="checkerScreen">
-      <div class="token-input">
-        <textarea id="tokenInput" placeholder="Enter Discord tokens (one per line)"></textarea>
-        <button id="checkBtn">Verify Tokens</button>
+    <div class="token-status">
+      <div>
+        <strong>اسم المستخدم:</strong> غير معروف<br>
+        <span class="status-bad">❌ توكن غير صالح</span>
       </div>
-
-      <div class="results" id="results"></div>
-
-      <div class="actions hidden" id="actions">
-        <div class="action-group">
-          <h3>Change Account Name</h3>
-          <input type="text" id="newName" placeholder="New Account Name">
-          <button id="changeNameBtn">Update Names</button>
-          <div class="action-feedback" id="nameChangeFeedback"></div>
-        </div>
-
-        <div class="action-group">
-          <h3>Update Bio</h3>
-          <textarea id="newBio" placeholder="Enter new bio (max 190 characters)" maxlength="190"></textarea>
-          <button id="changeBioBtn">Update Bios</button>
-          <div class="action-feedback" id="bioChangeFeedback"></div>
-        </div>
-
-        <div class="action-group">
-          <h3>Join Server</h3>
-          <input type="text" id="serverId" placeholder="Server ID/Invite Code to join">
-          <button id="joinServer">Join All Servers</button>
-          <div class="action-feedback" id="joinServerFeedback"></div>
-        </div>
-
-        <div class="action-group">
-          <h3>Add Friend</h3>
-          <input type="text" id="userId" placeholder="Username#discriminator for friend request">
-          <button id="sendFriend">Send All Friend Requests</button>
-          <div class="action-feedback" id="friendRequestFeedback"></div>
-        </div>
-
-        <div class="action-group">
-          <h3>Set Status</h3>
-          <select id="statusSelect">
-            <option value="online">Online</option>
-            <option value="idle">Idle</option>
-            <option value="dnd">Do Not Disturb</option>
-            <option value="invisible">Invisible</option>
-          </select>
-          <input type="text" id="statusText" placeholder="Custom status text (optional)">
-          <button id="setStatus">Set All Statuses</button>
-          <div class="action-feedback" id="statusFeedback"></div>
-        </div>
-
-        <div class="action-group">
-          <h3>Send Message to Channel</h3>
-          <input type="text" id="channelId" placeholder="Channel ID">
-          <textarea id="messageText" placeholder="Message content"></textarea>
-          <button id="sendMessage">Send All Messages</button>
-          <div class="action-feedback" id="messageFeedback"></div>
-        </div>
-      </div>
+      <img src="https://cdn.discordapp.com/embed/avatars/1.png" alt="Avatar">
     </div>
-  </div>
 
-  <script>
-    // الكود البرمجي (JavaScript) الذي يتحكم في كل الأزرار والعمليات
-    // تمت كتابته بالكامل في ملفك
-    // سيتم اختصاره هنا لحجم الرسالة، لكن موجود في ملفك HTML
-  </script>
+    <button class="btn">تحقق من التوكنات</button>
+  </main>
+
 </body>
 </html>
