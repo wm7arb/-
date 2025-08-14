@@ -1,141 +1,108 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>لوحة التوكنات</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f5f5f5;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-      color: #111827;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-
-    input, textarea, button {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 15px;
-    }
-
-    button {
-      background-color: #2563eb;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #1d4ed8;
-    }
-
-    .output {
-      background-color: #fff;
-      border: 1px solid #ddd;
-      padding: 10px 15px;
-      border-radius: 6px;
-      margin-top: 10px;
-      white-space: pre-line;
-    }
-
-    .status-good { color: green; font-weight: bold; }
-    .status-bad { color: red; font-weight: bold; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إيتاتشي أوتشيها</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .profile-image img {
+            width: 100%;
+            max-width: 350px;
+            border-radius: 10px;
+            border: 2px solid #fff;
+        }
+        .buttons-container {
+            margin-top: 20px;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .info-box {
+            display: none;
+            margin-top: 20px;
+            background-color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .info-box h3 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        .info-box p {
+            font-size: 1em;
+        }
+    </style>
 </head>
 <body>
 
-  <h1>لوحة تحكم التوكنات</h1>
+    <div class="container">
+        <!-- صورة إيتاتشي -->
+        <div class="profile-image">
+            <img src="path_to_image.jpg" alt="إيتاتشي أوتشيها">
+        </div>
 
-  <label for="token">التوكن:</label>
-  <input type="text" id="token" placeholder="ضع التوكن هنا">
+        <!-- أزرار الخيارات -->
+        <div class="buttons-container">
+            <button class="btn" onclick="showInfo('experience')">الخبرات</button>
+            <button class="btn" onclick="showInfo('abilities')">المهارات</button>
+            <button class="btn" onclick="showInfo('achievements')">الإنجازات</button>
+        </div>
 
-  <button onclick="checkToken()">تحقق من التوكن</button>
-  <div id="token-status" class="output"></div>
+        <!-- معلومات الخبرات -->
+        <div id="experience" class="info-box">
+            <h3>الخبرات</h3>
+            <p>إيتاتشي أوتشيها هو نينجا قوي في عالم ناروتو. لديه خبرات طويلة في القتال، وكان جزءًا من الأكاتسوكي وأدى مهام سرية كعضو في قوات النينجا.</p>
+        </div>
 
-  <label for="channel">معرف الروم (القناة):</label>
-  <input type="text" id="channel" placeholder="123456789012345678">
+        <!-- معلومات المهارات -->
+        <div id="abilities" class="info-box">
+            <h3>المهارات</h3>
+            <p>إيتاتشي يمتلك مهارات نينجا استثنائية، مثل تقنية "شارينغان" و"تسونامي" التي تعتبر من أقوى التقنيات القتالية في عالم النينجا.</p>
+        </div>
 
-  <label for="message">الرسالة:</label>
-  <textarea id="message" rows="3" placeholder="الرسالة التي سيتم إرسالها"></textarea>
+        <!-- معلومات الإنجازات -->
+        <div id="achievements" class="info-box">
+            <h3>الإنجازات</h3>
+            <p>إيتاتشي قام بالعديد من الإنجازات البارزة، بما في ذلك قيادة الأكاتسوكي، وإنجازات عسكرية أخرى في عالم النينجا. كان له دور كبير في الحفاظ على توازن القوى في القرى النينجا.</p>
+        </div>
+    </div>
 
-  <button onclick="spam()">إرسال سبام</button>
-  <div id="spam-status" class="output"></div>
+    <script>
+        function showInfo(infoType) {
+            // إخفاء جميع المعلومات
+            var allInfoBoxes = document.querySelectorAll('.info-box');
+            allInfoBoxes.forEach(function(box) {
+                box.style.display = 'none';
+            });
 
-  <script>
-    async function checkToken() {
-      const token = document.getElementById("token").value;
-      const status = document.getElementById("token-status");
-
-      if (!token) return status.innerText = "❌ الرجاء إدخال التوكن";
-
-      try {
-        const res = await fetch("https://discord.com/api/v9/users/@me", {
-          headers: { Authorization: token }
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          status.innerHTML = `✅ التوكن صالح\nاسم المستخدم: ${data.username}#${data.discriminator}`;
-        } else {
-          status.innerHTML = "❌ التوكن غير صالح";
+            // إظهار الصندوق الذي تم اختياره
+            var selectedInfoBox = document.getElementById(infoType);
+            selectedInfoBox.style.display = 'block';
         }
-      } catch (err) {
-        status.innerHTML = "⚠️ حدث خطأ أثناء التحقق من التوكن";
-      }
-    }
-
-    async function spam() {
-      const token = document.getElementById("token").value;
-      const channel = document.getElementById("channel").value;
-      const message = document.getElementById("message").value;
-      const status = document.getElementById("spam-status");
-
-      if (!token || !channel || !message) {
-        return status.innerText = "❌ الرجاء تعبئة جميع الحقول";
-      }
-
-      let count = 0;
-      status.innerText = "🔄 جاري الإرسال...";
-
-      const interval = setInterval(async () => {
-        try {
-          const res = await fetch(`https://discord.com/api/v9/channels/${channel}/messages`, {
-            method: "POST",
-            headers: {
-              Authorization: token,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ content: message })
-          });
-
-          if (res.ok) {
-            count++;
-            status.innerText = `✅ تم إرسال ${count} رسائل`;
-          } else {
-            status.innerText = `❌ فشل إرسال الرسالة (${res.status})`;
-            clearInterval(interval);
-          }
-        } catch (err) {
-          status.innerText = "⚠️ خطأ في الاتصال";
-          clearInterval(interval);
-        }
-      }, 1000); // كل ثانية
-    }
-  </script>
+    </script>
 
 </body>
 </html>
