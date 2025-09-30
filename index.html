@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج تقديم العصابات والشرطة والقوات الخاصة</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f8f8f8, #d2e0e9);
+            color: #333;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 40px;
+            color: #4CAF50;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 32px;
+            margin: 10px;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .button-container {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .tab-content {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background-color: #f4f4f4;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            background-color: #fff;
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        label {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .input-container textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .input-container input[type="radio"], .input-container input[type="checkbox"] {
+            margin-top: 8px;
+            transform: scale(1.2);
+        }
+
+        form {
+            width: 70%;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .conditional-question {
+            display: none;
+        }
+
+        .input-container textarea {
+            font-family: 'Arial', sans-serif;
+        }
+
+        .input-container input[type="radio"]:checked + label {
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>نموذج تقديم العصابات والشرطة والقوات الخاصة</h1>
+
+    <h3>اختار نوع التقديم:</h3>
+
+    <div class="button-container">
+        <button class="button" onclick="showTab('gang')">تقديم عصابات</button>
+        <button class="button" onclick="showTab('police')">تقديم شرطة</button>
+        <button class="button" onclick="showTab('special-forces')">تقديم قوات خاصة</button>
+    </div>
+
+    <!-- تقديم عصابات -->
+    <div class="tab-content" id="gang">
+        <h2>نموذج تقديم عصابات</h2>
+        <form id="gang-form">
+            <div class="input-container">
+                <label for="gang-username">ما هو اسم حسابك في روبلوكس؟</label>
+                <input type="text" name="username" id="gang-username" required>
+            </div>
+
+            <div class="input-container">
+                <label for="gang-discord">ما هو إيدي الديسكورد الخاص بك؟ (اليوزر)</label>
+                <input type="text" name="discord" id="gang-discord" required>
+            </div>
+
+            <div class="input-container">
+                <label for="gang-experience">ما هي خبرتك في الإجرام؟</label>
+                <textarea name="experience" id="gang-experience" required></textarea>
+            </div>
+
+            <div class="input-container">
+                <label for="gang-reason">لماذا تريد التقديم على العصابة؟</label>
+                <textarea name="reason" id="gang-reason" required></textarea>
+            </div>
+
+            <div class="input-container">
+                <label for="gang-rules">هل ستتبع قوانين العصابة؟</label>
+                <input type="checkbox" name="rules" id="gang-rules" required>
+            </div>
+
+            <div class="input-container">
+                <label>اذا تم قبولك، هل لديك القدرة على التفاعل؟</label><br>
+                <label>
+                    <input type="radio" name="interaction" value="نعم" required> نعم
+                </label>
+                <label>
+                    <input type="radio" name="interaction" value="لا"> لا
+                </label>
+            </div>
+
+            <div class="input-container">
+                <label for="gang-commitment-text">اتعهد أن أصون القطاع والالتزام بالقوانين وعدم مخالفتها:</label>
+                <textarea name="commitment" id="gang-commitment-text" placeholder="اكتب تعهدك هنا..." required></textarea>
+            </div>
+
+            <button type="submit">إرسال التقديم</button>
+        </form>
+    </div>
+
+    <!-- تقديم شرطة -->
+    <div class="tab-content" id="police">
+        <h2>نموذج تقديم شرطة</h2>
+        <form id="police-form">
+            <div class="input-container">
+                <label for="police-username">ما هو اسم حسابك في روبلوكس؟</label>
+                <input type="text" name="username" id="police-username" required>
+            </div>
+
+            <div class="input-container">
+                <label for="police-discord">ما هو إيدي الديسكورد الخاص بك؟ (اليوزر)</label>
+                <input type="text" name="discord" id="police-discord" required>
+            </div>
+
+            <div class="input-container">
+                <label for="police-experience">ما هي خبرتك في الشرطة؟</label>
+                <textarea name="experience" id="police-experience" required></textarea>
+            </div>
+
+            <div class="input-container">
+                <label for="police-reason">لماذا تريد التقديم على الشرطة؟</label>
+                <textarea name="reason" id="police-reason" required></textarea>
+            </div>
+
+            <div class="input-container">
+                <label for="police-rules">هل ستتبع قوانين الشرطة؟</label>
+                <input type="checkbox" name="rules" id="police-rules" required>
+            </div>
+
+            <div class="input-container">
+                <label>اذا تم قبولك، هل لديك القدرة على التفاعل؟</label><br>
+                <label>
+                    <input type="radio" name="interaction" value="نعم" required> نعم
+                </label>
+                <label>
+                    <input type="radio" name="interaction" value="لا"> لا
+                </label>
+            </div>
+
+            <div class="input-container">
+                <label for="police-commitment-text">اتعهد أن أصون القطاع والالتزام بالقوانين وعدم مخالفتها:</label>
+                <textarea name="commitment" id="police-commitment-text" placeholder="اكتب تعهدك هنا..." required></textarea>
+            </div>
+
+            <button type="submit">إرسال التقديم</button>
+        </form>
+    </div>
+
+    <!-- تقديم قوات خاصة -->
+    <div class="tab-content" id="special-forces">
+        <h2>نموذج تقديم قوات خاصة</h2>
+        <form id="special-forces-form">
+            <div class="input-container">
+                <label for="special-forces-username">ما هو اسم حسابك في روبلوكس؟</label>
+                <input type="text" name="username" id="special-forces-username" required>
+            </div>
+
+            <div class="input-container">
+                <label for="special-forces-discord">ما هو إيدي الديسكورد الخاص بك؟ (اليوزر)</label>
+                <input type="text" name="discord" id="special-forces-discord" required>
+            </div>
+
+            <div class="input-container">
+                <label for="special-forces-experience">ما هي خبرتك في القوات الخاصة؟</label>
+                <textarea name="experience" id="special-forces-experience" required></textarea>
+            </div>
+
+            <div class="input-container">
+                <label for="special-forces-reason">لماذا تريد التقديم على القوات الخاصة؟</label>
+                <textarea name="reason" id="special-forces-reason" required></textarea>
+            </div>
+
+            <div class="input-container">
+                <label for="special-forces-rules">هل ستتبع قوانين القوات الخاصة؟</label>
+                <input type="checkbox" name="rules" id="special-forces-rules" required>
+            </div>
+
+            <div class="input-container">
+                <label>اذا تم قبولك، هل لديك القدرة على التفاعل؟</label><br>
+                <label>
+                    <input type="radio" name="interaction" value="نعم" required> نعم
+                </label>
+                <label>
+                    <input type="radio" name="interaction" value="لا"> لا
+                </label>
+            </div>
+
+            <div class="input-container">
+                <label for="special-forces-commitment-text">اتعهد أن أصون القطاع والالتزام بالقوانين وعدم مخالفتها:</label>
+                <textarea name="commitment" id="special-forces-commitment-text" placeholder="اكتب تعهدك هنا..." required></textarea>
+            </div>
+
+            <button type="submit">إرسال التقديم</button>
+        </form>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
