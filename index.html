@@ -70,6 +70,22 @@
         .send-button:hover {
             background-color: #0056b3;
         }
+        .upload-button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .upload-button:hover {
+            background-color: #218838;
+        }
+        .file-preview {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -79,6 +95,13 @@
     <div class="chatbox" id="chatbox"></div>
     <input type="text" id="userInput" class="input-area" placeholder="اكتب رسالتك...">
     <button class="send-button" onclick="sendMessage()">إرسال</button>
+
+    <!-- زر لرفع الملفات -->
+    <input type="file" id="fileInput" accept="image/*,audio/*,.pdf,.docx" style="display: none;" onchange="handleFileSelect(event)">
+    <button class="upload-button" onclick="document.getElementById('fileInput').click()">رفع ملف</button>
+    
+    <!-- عرض الملفات المرفوعة -->
+    <div id="filePreview" class="file-preview"></div>
 </div>
 
 <script>
@@ -126,6 +149,37 @@
         
         // جعل المحادثة تنتقل إلى الأسفل دائمًا بعد الرد
         chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    function handleFileSelect(event) {
+        const fileInput = event.target;
+        const filePreview = document.getElementById('filePreview');
+        const file = fileInput.files[0];
+
+        if (file) {
+            const fileInfo = document.createElement('p');
+            fileInfo.textContent = `تم رفع الملف: ${file.name} (نوع الملف: ${file.type})`;
+            filePreview.appendChild(fileInfo);
+
+            // إذا كان الملف صورة
+            if (file.type.startsWith('image/')) {
+                const imgPreview = document.createElement('img');
+                imgPreview.src = URL.createObjectURL(file);
+                imgPreview.alt = 'معاينة الصورة';
+                imgPreview.style.maxWidth = '200px';
+                imgPreview.style.marginTop = '10px';
+                filePreview.appendChild(imgPreview);
+            }
+
+            // إذا كان الملف صوتي
+            if (file.type.startsWith('audio/')) {
+                const audioPreview = document.createElement('audio');
+                audioPreview.controls = true;
+                audioPreview.src = URL.createObjectURL(file);
+                audioPreview.style.marginTop = '10px';
+                filePreview.appendChild(audioPreview);
+            }
+        }
     }
 </script>
 
