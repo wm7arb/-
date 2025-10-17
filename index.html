@@ -3,187 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حاسبة بلوت</title>
+    <title>حاسبة محمد المعاشي</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #111;
+            background: linear-gradient(45deg, #00b3ff, #003366);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            color: white;
-            flex-direction: column;
         }
 
-        .calculator {
-            background-color: #222;
-            padding: 40px 30px;
-            border-radius: 20px;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
-            text-align: center;
-            width: 360px;
-        }
-
-        .header {
+        .container {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            width: 100%;
-            margin-bottom: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
 
-        .header button {
-            background-color: #555;
-            color: white;
-            font-size: 20px;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .header button:hover {
-            background-color: #666;
-        }
-
-        .result {
-            font-size: 40px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .result span {
-            display: block;
+        .score {
+            font-size: 48px;
+            margin: 20px;
+            letter-spacing: 2px;
         }
 
         .buttons {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .buttons button {
-            background-color: #444;
-            color: white;
-            padding: 25px;
-            font-size: 28px;
-            border-radius: 15px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .buttons button:hover {
-            background-color: #555;
-        }
-
-        .footer {
             display: flex;
             justify-content: space-between;
-            width: 100%;
+            width: 80%;
             margin-top: 30px;
         }
 
-        .footer button {
-            background-color: #e74c3c;
-            color: white;
-            font-size: 18px;
-            padding: 15px 20px;
-            border-radius: 10px;
+        .button {
+            padding: 20px 50px;
+            font-size: 22px;
             border: none;
+            background-color: #fff;
+            color: #000;
+            border-radius: 50px;
             cursor: pointer;
-            width: 45%;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .button:hover {
+            background-color: #ff6600;
+            transform: scale(1.1);
+        }
+
+        .action-button {
+            margin-top: 30px;
+            background-color: #ff6600;
+            color: white;
+            padding: 25px;
+            border-radius: 50px;
+            font-size: 26px;
+            cursor: pointer;
+            width: 50%;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .action-button:hover {
+            background-color: #e65c00;
+            transform: scale(1.05);
+        }
+
+        input[type="number"] {
+            font-size: 30px;
+            padding: 10px;
+            margin: 20px;
+            width: 200px;
+            text-align: center;
+            background-color: #333;
+            border: 2px solid #fff;
+            color: white;
+            border-radius: 10px;
             transition: background-color 0.3s ease;
         }
 
-        .footer button:hover {
-            background-color: #c0392b;
-        }
-
-        .footer button:active {
-            background-color: #e74c3c;
+        input[type="number"]:focus {
+            background-color: #ff6600;
+            outline: none;
         }
     </style>
 </head>
 <body>
-    <div class="calculator">
-        <div class="header">
-            <button onclick="clearDisplay()">←</button>
-            <div class="result">
-                <span>لنا</span>
-                <span id="display">صفر</span>
-            </div>
-            <button onclick="resetCalculator()">صكة جديدة</button>
+
+    <div class="container">
+        <div class="score">
+            <span id="ourScore">0</span> <span>:</span> <span id="theirScore">0</span>
         </div>
+
+        <input type="number" id="inputNumber" placeholder="أدخل الرقم" />
+
         <div class="buttons">
-            <button onclick="appendNumber(1)">1</button>
-            <button onclick="appendNumber(2)">2</button>
-            <button onclick="appendNumber(3)">3</button>
-            <button onclick="appendNumber(4)">4</button>
-            <button onclick="appendNumber(5)">5</button>
-            <button onclick="appendNumber(6)">6</button>
-            <button onclick="appendNumber(7)">7</button>
-            <button onclick="appendNumber(8)">8</button>
-            <button onclick="appendNumber(9)">9</button>
-            <button onclick="appendNumber(0)">0</button>
+            <button class="button" onclick="updateScore('our')">لنا</button>
+            <button class="button" onclick="updateScore('their')">لهم</button>
         </div>
-        <div class="footer">
-            <button>دق الولد</button>
-            <button onclick="clearLast()">تراجع</button>
-        </div>
+
+        <button class="action-button" onclick="resetScores()">صكه جديدة</button>
     </div>
 
     <script>
-        let display = document.getElementById('display');
-        let currentInput = '0';
-
-        function appendNumber(num) {
-            if (currentInput === '0') {
-                currentInput = num.toString();
-            } else {
-                currentInput += num.toString();
+        function updateScore(team) {
+            const inputNumber = document.getElementById('inputNumber').value;
+            const number = parseInt(inputNumber);
+            if (isNaN(number)) {
+                alert("الرجاء إدخال رقم صحيح");
+                return;
             }
-            updateDisplay();
+
+            const scoreElement = team === 'our' ? document.getElementById('ourScore') : document.getElementById('theirScore');
+            let currentScore = parseInt(scoreElement.innerText);
+            scoreElement.innerText = currentScore + number;
+            document.getElementById('inputNumber').value = ''; // إعادة تعيين الرقم المدخل
         }
 
-        function updateDisplay() {
-            display.textContent = currentInput;
+        function resetScores() {
+            document.getElementById('ourScore').innerText = '0';
+            document.getElementById('theirScore').innerText = '0';
+            document.getElementById('inputNumber').value = ''; // إعادة تعيين الرقم المدخل
         }
-
-        function clearDisplay() {
-            currentInput = '0';
-            updateDisplay();
-        }
-
-        function resetCalculator() {
-            currentInput = '0';
-            updateDisplay();
-        }
-
-        function clearLast() {
-            currentInput = currentInput.slice(0, -1);
-            if (currentInput === '') {
-                currentInput = '0';
-            }
-            updateDisplay();
-        }
-
-        // Allow keyboard input
-        window.addEventListener('keydown', function(event) {
-            if (event.key >= 0 && event.key <= 9) {
-                appendNumber(event.key);
-            }
-        });
     </script>
+
 </body>
 </html>
