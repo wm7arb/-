@@ -3,219 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محادثة الذكاء الاصطناعي مع Google API</title>
+    <title>حاسبة بلوت</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
-        .container {
-            width: 80%;
-            max-width: 900px;
-            margin: 20px auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .chatbox {
-            border: 1px solid #ddd;
-            padding: 10px;
-            height: 300px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            background-color: #fff;
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #111;
             display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
             flex-direction: column;
-            gap: 10px;
         }
-        .message {
-            padding: 10px;
-            border-radius: 5px;
-            max-width: 60%;
-            margin-bottom: 10px;
-            font-size: 16px;
+
+        .calculator {
+            background-color: #333;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            width: 350px;
         }
-        .user-message {
-            background-color: #e0e0e0;
-            align-self: flex-start;
-        }
-        .ai-message {
-            background-color: #007bff;
-            color: white;
-            align-self: flex-end;
-        }
-        .input-area {
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+            margin-bottom: 30px;
         }
-        .send-button, .upload-button {
-            background-color: #007bff;
+
+        .header button {
+            background-color: #444;
             color: white;
-            padding: 10px 15px;
+            font-size: 20px;
             border: none;
-            border-radius: 5px;
+            padding: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            transition: background-color 0.2s;
         }
-        .send-button:hover, .upload-button:hover {
-            background-color: #0056b3;
+
+        .header button:hover {
+            background-color: #555;
         }
-        .upload-button {
-            background-color: #28a745;
-            margin-top: 10px;
+
+        .result {
+            font-size: 40px;
+            font-weight: bold;
+            margin-bottom: 20px;
         }
-        .file-preview {
-            margin-top: 10px;
+
+        .result span {
+            display: block;
         }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .buttons button {
+            background-color: #444;
+            color: white;
+            padding: 20px;
+            font-size: 25px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .buttons button:hover {
+            background-color: #555;
+        }
+
+        .footer {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .footer button {
+            background-color: #d9534f;
+            color: white;
+            font-size: 20px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            width: 45%;
+            transition: background-color 0.2s;
+        }
+
+        .footer button:hover {
+            background-color: #c9302c;
+        }
+
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h1>محادثة الذكاء الاصطناعي مع Google API</h1>
-    <div class="chatbox" id="chatbox"></div>
-    <input type="text" id="userInput" class="input-area" placeholder="اكتب رسالتك...">
-    <button class="send-button" onclick="sendMessage()">إرسال</button>
-
-    <!-- زر لرفع الملفات -->
-    <input type="file" id="fileInput" accept="image/*,audio/*,.pdf,.docx" style="display: none;" onchange="handleFileSelect(event)">
-    <button class="upload-button" onclick="document.getElementById('fileInput').click()">رفع ملف</button>
-    
-    <!-- عرض الملفات المرفوعة -->
-    <div id="filePreview" class="file-preview"></div>
-</div>
-
-<script>
-    const API_KEY = "AIzaSyDyvMWDrr26XSB1EMEK7aQryBre-BIhOrQ"; // ضع هنا مفتاح API الخاص بك من Google
-
-    async function sendMessage() {
-        const userMessage = document.getElementById('userInput').value;
-        if (userMessage.trim() === "") return;
-
-        const chatbox = document.getElementById('chatbox');
-        
-        // إضافة الرسالة المدخلة من المستخدم على الجهة اليسرى
-        chatbox.innerHTML += `<div class="message user-message"><b>أنت:</b> ${userMessage}</div>`;
-        
-        // تحديث واجهة المستخدم بإضافة رد مؤقت للذكاء الاصطناعي
-        chatbox.innerHTML += `<div class="message ai-message"><b>الذكاء الاصطناعي:</b> جاري الرد...</div>`;
-
-        // جعل المحادثة تنتقل إلى الأسفل دائمًا
-        chatbox.scrollTop = chatbox.scrollHeight;
-
-        // إرسال رسالة إلى الذكاء الاصطناعي عبر Google API أو OpenAI API
-        const response = await fetch('https://api.openai.com/v1/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`
-            },
-            body: JSON.stringify({
-                model: "text-davinci-003", 
-                prompt: userMessage,
-                max_tokens: 150,
-                temperature: 0.7
-            })
-        });
-
-        const data = await response.json();
-        const aiMessage = data.choices[0].text;
-
-        // مسح النص المؤقت وإظهار الرد الفعلي من الذكاء الاصطناعي
-        const lastMessage = chatbox.querySelector('.ai-message:last-child');
-        lastMessage.innerHTML = `<b>الذكاء الاصطناعي:</b> ${aiMessage}`;
-
-        // مسح خانة الإدخال (الكيبورد) بعد إرسال الرسالة
-        document.getElementById('userInput').value = '';
-        
-        // جعل المحادثة تنتقل إلى الأسفل دائمًا بعد الرد
-        chatbox.scrollTop = chatbox.scrollHeight;
-    }
-
-    function handleFileSelect(event) {
-        const fileInput = event.target;
-        const filePreview = document.getElementById('filePreview');
-        const file = fileInput.files[0];
-
-        if (file) {
-            const fileInfo = document.createElement('p');
-            fileInfo.textContent = `تم رفع الملف: ${file.name} (نوع الملف: ${file.type})`;
-            filePreview.appendChild(fileInfo);
-
-            // إذا كان الملف صورة
-            if (file.type.startsWith('image/')) {
-                const imgPreview = document.createElement('img');
-                imgPreview.src = URL.createObjectURL(file);
-                imgPreview.alt = 'معاينة الصورة';
-                imgPreview.style.maxWidth = '200px';
-                imgPreview.style.marginTop = '10px';
-                filePreview.appendChild(imgPreview);
-
-                // إرسال رابط الصورة إلى الذكاء الاصطناعي
-                sendMessageWithFile(`لقد رفعت صورة: ${file.name}`);
-            }
-
-            // إذا كان الملف صوتي
-            if (file.type.startsWith('audio/')) {
-                const audioPreview = document.createElement('audio');
-                audioPreview.controls = true;
-                audioPreview.src = URL.createObjectURL(file);
-                audioPreview.style.marginTop = '10px';
-                filePreview.appendChild(audioPreview);
-
-                // إرسال رابط المقطع الصوتي إلى الذكاء الاصطناعي
-                sendMessageWithFile(`لقد رفعت مقطع صوتي: ${file.name}`);
-            }
-        }
-    }
-
-    // إرسال رسالة جديدة مع ذكر الملف المرفوع
-    function sendMessageWithFile(message) {
-        const chatbox = document.getElementById('chatbox');
-        
-        // إضافة الرسالة التي تتعلق بالملف على الجهة اليسرى
-        chatbox.innerHTML += `<div class="message user-message"><b>أنت:</b> ${message}</div>`;
-        
-        // تحديث واجهة المستخدم بإضافة رد مؤقت للذكاء الاصطناعي
-        chatbox.innerHTML += `<div class="message ai-message"><b>الذكاء الاصطناعي:</b> جاري الرد...</div>`;
-
-        // جعل المحادثة تنتقل إلى الأسفل دائمًا
-        chatbox.scrollTop = chatbox.scrollHeight;
-        
-        // إرسال رسالة إلى الذكاء الاصطناعي عبر Google API أو OpenAI API
-        fetch('https://api.openai.com/v1/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`
-            },
-            body: JSON.stringify({
-                model: "text-davinci-003", 
-                prompt: message,
-                max_tokens: 150,
-                temperature: 0.7
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            const aiMessage = data.choices[0].text;
-            const lastMessage = chatbox.querySelector('.ai-message:last-child');
-            lastMessage.innerHTML = `<b>الذكاء الاصطناعي:</b> ${aiMessage}`;
-            chatbox.scrollTop = chatbox.scrollHeight;
-        })
-        .catch(error => console.error('Error:', error));
-    }
-</script>
-
+    <div class="calculator">
+        <div class="header">
+            <button>←</button>
+            <div class="result">
+                <span>لنا</span>
+                <span>صفر</span>
+            </div>
+            <button>صكة جديدة</button>
+        </div>
+        <div class="buttons">
+            <button>0</button>
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>4</button>
+            <button>5</button>
+            <button>6</button>
+            <button>7</button>
+            <button>8</button>
+            <button>9</button>
+        </div>
+        <div class="footer">
+            <button>دق الولد</button>
+            <button>تراجع</button>
+        </div>
+    </div>
 </body>
 </html>
