@@ -114,29 +114,79 @@
 <body>
     <div class="calculator">
         <div class="header">
-            <button>←</button>
+            <button onclick="backspace()">←</button>
             <div class="result">
-                <span>لنا</span>
-                <span>صفر</span>
+                <span id="lena">لنا</span>
+                <span id="zero">صفر</span>
             </div>
-            <button>صكة جديدة</button>
+            <button onclick="reset()">صكة جديدة</button>
         </div>
         <div class="buttons">
-            <button>0</button>
-            <button>1</button>
-            <button>2</button>
-            <button>3</button>
-            <button>4</button>
-            <button>5</button>
-            <button>6</button>
-            <button>7</button>
-            <button>8</button>
-            <button>9</button>
+            <button onclick="appendNumber(1)">1</button>
+            <button onclick="appendNumber(2)">2</button>
+            <button onclick="appendNumber(3)">3</button>
+            <button onclick="appendNumber(4)">4</button>
+            <button onclick="appendNumber(5)">5</button>
+            <button onclick="appendNumber(6)">6</button>
+            <button onclick="appendNumber(7)">7</button>
+            <button onclick="appendNumber(8)">8</button>
+            <button onclick="appendNumber(9)">9</button>
+            <button onclick="appendNumber(0)">0</button>
         </div>
         <div class="footer">
             <button>دق الولد</button>
-            <button>تراجع</button>
+            <button onclick="clearInput()">تراجع</button>
         </div>
     </div>
+
+    <script>
+        let lenaText = document.getElementById('lena');
+        let zeroText = document.getElementById('zero');
+        let currentNumber = '0';
+
+        // تحديث الشاشة عند إضافة رقم
+        function appendNumber(num) {
+            if (currentNumber === '0') {
+                currentNumber = num.toString();
+            } else {
+                currentNumber += num.toString();
+            }
+            updateDisplay();
+        }
+
+        // تحديث شاشة النتائج
+        function updateDisplay() {
+            lenaText.textContent = 'لنا';
+            zeroText.textContent = currentNumber;
+        }
+
+        // مسح الشاشة بالكامل
+        function reset() {
+            currentNumber = '0';
+            updateDisplay();
+        }
+
+        // حذف الرقم الأخير
+        function backspace() {
+            currentNumber = currentNumber.slice(0, -1);
+            if (currentNumber === '') {
+                currentNumber = '0';
+            }
+            updateDisplay();
+        }
+
+        // تراجع للأرقام
+        function clearInput() {
+            currentNumber = '0';
+            updateDisplay();
+        }
+
+        // استخدام الكيبورد
+        window.addEventListener('keydown', function(event) {
+            if (event.key >= 0 && event.key <= 9) {
+                appendNumber(event.key);
+            }
+        });
+    </script>
 </body>
 </html>
