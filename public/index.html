@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>أكاديمية لوسفر | التقديمات</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; background: #000; color: white; font-family: sans-serif; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://cdn.discordapp.com/attachments/1476678585103417415/1479321826931900528/f7bf83a04d8fb47890edc2629eba03bb.webp');
+            background-size: cover; background-attachment: fixed;
+        }
+        .container { text-align: center; width: 90%; max-width: 400px; }
+        .main-btn { width: 100%; padding: 18px; margin: 10px 0; border: 2px solid #ffcc00; background: none; color: #ffcc00; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 1.1rem; }
+        .main-btn:hover { background: #ffcc00; color: #000; }
+        .modal { display: none; position: fixed; inset: 0; background: #0b0b0b; flex-direction: column; overflow-y: auto; z-index: 99; }
+        .header { position: sticky; top: 0; background: #111; padding: 15px; border-bottom: 2px solid #ffcc00; display: flex; justify-content: space-between; align-items: center; }
+        .back-btn { background: #ffcc00; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .content { padding: 20px; max-width: 600px; margin: 0 auto; width: 100%; }
+        .q-box { background: #1a1a1a; padding: 15px; border-radius: 10px; border-right: 5px solid #ffcc00; margin-bottom: 15px; }
+        input, textarea, select { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: white; border-radius: 8px; margin-top: 10px; }
+        .submit-btn { width: 100%; padding: 18px; background: #ffcc00; border: none; font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 10px; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="home">
+        <h1 style="color:#ffcc00;">أكاديمية لوسفر</h1>
+        <button class="main-btn" onclick="openForm('gang')">تقديم عصابة</button>
+        <button class="main-btn" onclick="openForm('police')">تقديم شرطة</button>
+        <button class="main-btn" onclick="openForm('staff')">تقديم إدارة</button>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="header">
+            <button class="back-btn" onclick="closeForm()">رجوع</button>
+            <span id="title" style="color:#ffcc00; font-weight:bold;">التقديم</span>
+            <div style="width:50px;"></div>
+        </div>
+        <div class="content">
+            <div class="q-box"><p>اسمك في روبلوكس؟</p><input id="rbx"></div>
+            <div class="q-box"><p>آيدي الديسكورد؟</p><input id="uid"></div>
+            <div id="qs"></div>
+            <button class="submit-btn" id="sbtn" onclick="send()">إرسال التقديم</button>
+        </div>
+    </div>
+
+    <script>
+        let current = "";
+        const rules = "1- عمرك 13+ | 2- تفاعل جيد | 3- صراحة | 4- احترام القادة | 5- التزام بالقوانين";
+
+        function openForm(t) {
+            current = t; document.getElementById('home').style.display='none'; document.getElementById('modal').style.display='flex';
+            const qs = document.getElementById('qs');
+            if(t==='police') {
+                qs.innerHTML = `<div class="q-box"><p>الشروط: ${rules}</p><select id="agree"><option>نعم</option><option>لا</option></select></div>
+                <div class="q-box"><p>هدف الشرطة؟</p><textarea id="a1"></textarea></div>
+                <div class="q-box"><p>لماذا التقديم؟</p><textarea id="a2"></textarea></div>
+                <div class="q-box"><p>هل لديك قدرة تفاعل؟</p><textarea id="a3"></textarea></div>
+                <div class="q-box"><p>أتعهد بالالتزام:</p><select id="pledge"><option>نعم</option></select></div>`;
+            } else if(t==='gang') {
+                qs.innerHTML = `<div class="q-box"><p>الشروط: ${rules}</p><select id="agree"><option>نعم</option><option>لا</option></select></div>
+                <div class="q-box"><p>خبراتك بالإجرام؟</p><textarea id="a1"></textarea></div>
+                <div class="q-box"><p>لماذا التقديم؟</p><textarea id="a2"></textarea></div>
+                <div class="q-box"><p>اتباع القوانين؟</p><textarea id="a3"></textarea></div>
+                <div class="q-box"><p>قدرة التفاعل؟</p><select id="active"><option>نعم</option><option>لا</option></select></div>
+                <div class="q-box"><p>أتعهد بالالتزام:</p><select id="pledge"><option>نعم</option></select></div>`;
+            }
+        }
+
+        async function send() {
+            const btn = document.getElementById('sbtn'); btn.disabled=true;
+            const data = {
+                type: current, rblx: document.getElementById('rbx').value, userId: document.getElementById('uid').value,
+                q1: `الموافقة: ${document.getElementById('agree')?.value}\nس1: ${document.getElementById('a1')?.value}\nس2: ${document.getElementById('a2')?.value}`,
+                q2: `س3: ${document.getElementById('a3')?.value}\nالتعهد: ${document.getElementById('pledge')?.value}\nالتفاعل: ${document.getElementById('active')?.value || 'نعم'}`
+            };
+            await fetch('/submit', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+            alert("تم الإرسال!"); location.reload();
+        }
+        function closeForm() { document.getElementById('modal').style.display='none'; document.getElementById('home').style.display='block'; }
+    </script>
+</body>
+</html>
