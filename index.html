@@ -2,121 +2,100 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>أكاديمية لوسفر | التقديمات</title>
     <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html, body { 
-            height: 100%; margin: 0; padding: 0; 
-            scroll-behavior: smooth; font-family: 'Segoe UI', Tahoma, sans-serif;
-            background-color: #000; overflow-x: hidden;
+        * { box-sizing: border-box; }
+        body { 
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
+            url('https://cdn.discordapp.com/attachments/1476678585103417415/1479321826931900528/f7bf83a04d8fb47890edc2629eba03bb.webp');
+            background-size: cover; background-attachment: fixed; color: #ffcc00; 
+            font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; 
         }
-        body {
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
-                        url('https://cdn.discordapp.com/attachments/1476678585103417415/1479321826931900528/f7bf83a04d8fb47890edc2629eba03bb.webp');
-            background-size: cover; background-position: center; background-attachment: fixed;
-            color: white; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        .container { padding: 50px 20px; }
+        .btn { 
+            background: rgba(0,0,0,0.7); color: #ffcc00; border: 2px solid #ffcc00; 
+            padding: 15px 40px; margin: 10px; border-radius: 10px; cursor: pointer; 
+            font-weight: bold; width: 100%; max-width: 300px; transition: 0.3s;
         }
-        .home-screen { text-align: center; width: 100%; padding: 20px; }
-        h1 { color: #ffcc00; font-size: clamp(2rem, 8vw, 4rem); text-shadow: 0 0 20px rgba(255, 204, 0, 0.4); margin-bottom: 40px; }
-        .btns-container { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 400px; margin: 0 auto; }
-        .main-btn { 
-            padding: 18px; border: 2px solid #ffcc00; background: rgba(0,0,0,0.7); 
-            color: #ffcc00; font-weight: bold; border-radius: 15px; cursor: pointer; 
-            font-size: 1.2rem; transition: 0.3s;
-        }
-        .main-btn:hover { background: #ffcc00; color: black; box-shadow: 0 0 25px #ffcc00; }
+        .btn:hover { background: #ffcc00; color: #000; }
         .modal { 
-            display: none; position: fixed; inset: 0; background: #0b0b0b; 
-            z-index: 1000; flex-direction: column; overflow-y: auto;
+            display: none; position: fixed; inset: 0; background: #000; 
+            overflow-y: auto; padding: 20px; z-index: 1000; 
         }
-        .modal-header {
-            position: sticky; top: 0; background: #111; padding: 15px 20px;
-            display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 2px solid #ffcc00; z-index: 1001;
-        }
-        .back-btn { background: #ffcc00; color: black; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .modal-body { padding: 20px; width: 100%; max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
-        .q-box { background: #1a1a1a; padding: 15px; border-radius: 12px; border-right: 5px solid #ffcc00; }
-        .q-box p { margin: 0 0 10px 0; font-weight: bold; color: #ffcc00; }
-        input, textarea, select { 
-            width: 100%; padding: 14px; background: #252525; border: 1px solid #444; 
-            color: white; border-radius: 10px; font-size: 1rem;
-        }
-        .send-btn { 
-            width: 100%; max-width: 400px; background: #ffcc00; color: black; 
-            border: none; padding: 18px; font-weight: bold; border-radius: 12px; cursor: pointer; display: block; margin: 20px auto;
-        }
+        .q-box { background: #111; padding: 20px; border-radius: 10px; border-right: 5px solid #ffcc00; margin-bottom: 20px; text-align: right; }
+        input, textarea, select { width: 100%; padding: 12px; background: #222; color: #fff; border: 1px solid #444; border-radius: 8px; margin-top: 10px; }
+        .send-btn { background: #ffcc00; color: #000; padding: 20px; width: 100%; max-width: 400px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="home-screen" id="homeScreen">
+    <div class="container" id="home">
         <h1>أكاديمية لوسفر</h1>
-        <div class="btns-container">
-            <button class="main-btn" onclick="openForm('gang')">تقديم عصابة</button>
-            <button class="main-btn" onclick="openForm('police')">تقديم شرطة</button>
-            <button class="main-btn" onclick="openForm('staff')">تقديم إدارة</button>
-        </div>
+        <button class="btn" onclick="openForm('gang')">تقديم عصابة</button><br>
+        <button class="btn" onclick="openForm('police')">تقديم شرطة</button><br>
+        <button class="btn" onclick="openForm('staff')">تقديم إدارة</button>
     </div>
 
     <div id="modal" class="modal">
-        <div class="modal-header">
-            <button class="back-btn" onclick="closeForm()">← رجوع</button>
-            <span id="formTitle" style="color: #ffcc00; font-weight: bold;">التقديم</span>
-            <div style="width: 50px;"></div>
-        </div>
-        <div class="modal-body">
+        <button onclick="location.reload()" style="background:#ffcc00; border:none; padding:10px; border-radius:5px; cursor:pointer;">رجوع</button>
+        <div style="max-width: 600px; margin: 20px auto;">
             <div class="q-box"><p>اسم حسابك في روبلوكس:</p><input type="text" id="rblx"></div>
             <div class="q-box"><p>آيدي الديسكورد الخاص بك:</p><input type="text" id="userId"></div>
-            <div id="dynamicQuestions"></div>
-            <button class="send-btn" id="sendBtn" onclick="submit()">إرسال التقديم</button>
+            <div id="questions"></div>
+            <button class="send-btn" onclick="submit()">إرسال التقديم</button>
         </div>
     </div>
 
     <script>
         let currentType = "";
-        const API_URL = "http://prem-eu4.bot-hosting.net:20802/submit"; // الربط مع استضافتك
+        const API_URL = "http://prem-eu4.bot-hosting.net:20802/submit"; // رابط بورت استضافتك
 
         function openForm(type) {
             currentType = type;
-            document.getElementById('homeScreen').style.display = 'none';
-            document.getElementById('modal').style.display = 'flex';
-            const q = document.getElementById('dynamicQuestions');
-            
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('modal').style.display = 'block';
+            const q = document.getElementById('questions');
+
             if(type === 'police') {
-                document.getElementById('formTitle').innerText = "تقديم قطاع الشرطة";
-                q.innerHTML = `<div class="q-box"><p>لماذا تريد التقديم علي الشرطة؟</p><textarea id="ans1"></textarea></div>`;
+                q.innerHTML = `
+                    <div class="q-box"><p>ماهو هدف الشرطة في الماب؟</p><textarea id="ans1"></textarea></div>
+                    <div class="q-box"><p>لماذا تريد التقديم علي الشرطة؟</p><textarea id="ans2"></textarea></div>
+                    <div class="q-box"><p>هل ستحترم الرتب والقادة؟</p><select id="ans3"><option value="نعم">نعم</option><option value="لا">لا</option></select></div>
+                `;
             } else if(type === 'gang') {
-                document.getElementById('formTitle').innerText = "تقديم قطاع العصابة";
-                q.innerHTML = `<div class="q-box"><p>ما هي خبراتك في الإجرام؟</p><textarea id="ans1"></textarea></div>`;
+                q.innerHTML = `
+                    <div class="q-box"><p>ما هي خبراتك في الإجرام؟</p><textarea id="ans1"></textarea></div>
+                    <div class="q-box"><p>لماذا تريد التقديم علي العصابة؟</p><textarea id="ans2"></textarea></div>
+                    <div class="q-box"><p>هل ستتبع قوانين العصابة؟</p><select id="ans3"><option value="نعم">نعم</option></select></div>
+                `;
             } else {
-                document.getElementById('formTitle').innerText = "تقديم الإدارة";
-                q.innerHTML = `<div class="q-box"><p>ما هي خبراتك السابقة كإداري؟</p><textarea id="ans1"></textarea></div>`;
+                q.innerHTML = `
+                    <div class="q-box"><p>ما هي خبراتك السابقة كإداري؟</p><textarea id="ans1"></textarea></div>
+                    <div class="q-box"><p>كيف ستتعامل مع لاعب خالف القوانين؟</p><textarea id="ans2"></textarea></div>
+                    <div class="q-box"><p>كم ساعة تستطيع التواجد يومياً؟</p><input type="text" id="ans3"></div>
+                `;
             }
         }
 
-        function closeForm() { document.getElementById('modal').style.display = 'none'; document.getElementById('homeScreen').style.display = 'block'; }
-
         async function submit() {
-            const btn = document.getElementById('sendBtn');
             const rbx = document.getElementById('rblx').value;
-            const uId = document.getElementById('userId').value;
-            if(!rbx || !uId) return alert("يرجى ملء البيانات!");
+            const uid = document.getElementById('userId').value;
+            if(!rbx || !uid) return alert("الرجاء ملء البيانات!");
 
-            btn.disabled = true;
             try {
                 await fetch(API_URL, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ type: currentType, userId: uId, rblx: rbx, q1: document.getElementById('ans1').value })
+                    body: JSON.stringify({
+                        type: currentType, userId: uid, rblx: rbx,
+                        q1: document.getElementById('ans1').value,
+                        q2: document.getElementById('ans2').value + "\n" + document.getElementById('ans3').value
+                    })
                 });
-                alert("تم الإرسال بنجاح!");
+                alert("✅ تم الإرسال بنجاح!");
                 location.reload();
-            } catch (e) {
-                alert("فشل الاتصال بالبوت.");
-                btn.disabled = false;
-            }
+            } catch (e) { alert("❌ البوت غير متصل بالاستضافة!"); }
         }
     </script>
 </body>
